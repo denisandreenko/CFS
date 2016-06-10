@@ -1,5 +1,7 @@
-package com.exposit_ds.www;
+package com.exposit_ds.www.mediaDescription;
 
+
+import com.exposit_ds.www.TypeMedia;
 
 import java.io.Serializable;
 
