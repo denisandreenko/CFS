@@ -1,11 +1,9 @@
-package com.exposit_ds.www.desctiptionMedia;
+package com.exposit_ds.www;
 
-import com.exposit_ds.www.collections.TypeMedia;
 
-/**
- * Created by knigi on 07.06.2016.
- */
-public class MediaResourse {
+import java.io.Serializable;
+
+public class MediaResourse implements Serializable{
 
     private String name;
     private String year;
@@ -18,6 +16,11 @@ public class MediaResourse {
         this.name = nameMovie;
         this.year = year;
         this.nameAuthor = nameAuthor;
+    }
+
+    public MediaResourse(String nameMovie)
+    {
+        this.name = nameMovie;
     }
 
     public String getName() {
