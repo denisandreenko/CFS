@@ -1,5 +1,7 @@
 package com.exposit_ds.www;
 
+import com.exposit_ds.www.mediaDescription.*;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class PlayMediaCatalog {
     private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
 
     public static void playMediaCatalog() throws FileNotFoundException{
-        help();
+        System.out.println("Enter 'help' to see a list of commands");
         while (true){
             command();
             Scanner input = new Scanner(System.in);
@@ -46,16 +48,57 @@ public class PlayMediaCatalog {
             public void runCommand() {
                 Scanner input = new Scanner(System.in);
 
-                System.out.println("Enter name");
-                String name = input.nextLine();
+                System.out.println("Select number, what you want to add:");
+                System.out.println("1.Video");
+                System.out.println("2.Audio");
+                System.out.println("3.Book");
+                System.out.println("4.Image");
+                String choose = input.nextLine();
 
-                System.out.println("Enter year");
-                String year = input.nextLine();
+                switch (choose) {
+                    case "1":
+                        System.out.println("Enter name");
+                        String nameVideo = input.nextLine();
 
-                System.out.println("Enter main author name");
-                String nameAuthor = input.nextLine();
+                        System.out.println("Enter year");
+                        int yearVideo = Integer.parseInt(input.nextLine());
 
-                collection.add(new MediaResourse(name, year, nameAuthor));
+                        collection.add(new Video(nameVideo, yearVideo));
+
+                        MediaResourse mediaResourse = new Video(nameVideo, yearVideo);
+                        Video video = (Video) mediaResourse;
+                        break;
+                    case "2":
+                        System.out.println("Enter name");
+                        String nameAudio = input.nextLine();
+
+                        System.out.println("Enter name singer");
+                        String nameSinger = input.nextLine();
+
+                        collection.add(new Audio(nameAudio, nameSinger));
+                        break;
+                    case "3":
+                        System.out.println("Enter name");
+                        String nameBook = input.nextLine();
+
+                        System.out.println("Enter year");
+                        int yearBook = Integer.parseInt(input.nextLine());
+
+                        System.out.println("Enter name author");
+                        String nameAuthor = input.nextLine();
+
+                        collection.add(new Books(nameBook, yearBook, nameAuthor));
+                        break;
+                    case "4":
+                        System.out.println("Enter name");
+                        String nameImage = input.nextLine();
+
+                        collection.add(new Images(nameImage));
+                        break;
+                    default:
+                        System.out.println("Incorrect input, repeat attempt");
+                        break;
+                }
             }
         });
 
@@ -123,8 +166,6 @@ public class PlayMediaCatalog {
     }
 
     public static void help() {
-        System.out.println("Enter command:");
-        System.out.println("*help*");
         System.out.println("*show - asdasdasd*");
         System.out.println("*add*");
         System.out.println("*delete");

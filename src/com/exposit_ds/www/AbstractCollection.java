@@ -1,5 +1,7 @@
 package com.exposit_ds.www;
 
+import com.exposit_ds.www.mediaDescription.MediaResourse;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
