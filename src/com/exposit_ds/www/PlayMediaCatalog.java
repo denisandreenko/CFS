@@ -65,8 +65,8 @@ public class PlayMediaCatalog {
 
                         collection.add(new Video(nameVideo, yearVideo));
 
-                        MediaResourse mediaResourse = new Video(nameVideo, yearVideo);
-                        Video video = (Video) mediaResourse;
+//                        MediaResourse mediaResourse = new Video(nameVideo, yearVideo);
+//                        Video video = (Video) mediaResourse;
                         break;
                     case "2":
                         System.out.println("Enter name");
@@ -75,7 +75,9 @@ public class PlayMediaCatalog {
                         System.out.println("Enter name singer");
                         String nameSinger = input.nextLine();
 
-                        collection.add(new Audio(nameAudio, nameSinger));
+                        MediaResourse audioResourse = new Audio(nameAudio, nameSinger);
+                        collection.add(audioResourse);
+                        Audio audio = (Audio) audioResourse;
                         break;
                     case "3":
                         System.out.println("Enter name");
@@ -166,11 +168,11 @@ public class PlayMediaCatalog {
     }
 
     public static void help() {
-        System.out.println("*show - asdasdasd*");
-        System.out.println("*add*");
-        System.out.println("*delete");
-        System.out.println("*read*");
-        System.out.println("*save*");
-        System.out.println("*exit*");
+        System.out.println("show - display a list of media resources");
+        System.out.println("add - add a media resource");
+        System.out.println("delete - delete a media resource");
+        System.out.println("save - save media catalog data");
+        System.out.println("read - read media catalog data");
+        System.out.println("exit");
     }
 }

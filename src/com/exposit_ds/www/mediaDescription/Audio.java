@@ -15,4 +15,9 @@ public class Audio extends MediaResourse{
     public void setNameSinger(String nameSinger) {
         this.nameSinger = nameSinger;
     }
+
+    @Override
+    public String toString() {
+        return getNameSinger() + " - " + getName() + " (audio)";
+    }
 }

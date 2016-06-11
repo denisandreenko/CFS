@@ -25,4 +25,9 @@ public class Books extends MediaResourse{
     public void setNameAuthor(String nameAuthor) {
         this.nameAuthor = nameAuthor;
     }
+
+    @Override
+    public String toString() {
+        return "\"" + getName() + "\" " + getYear() + " " + getNameAuthor() + " (book)";
+    }
 }
