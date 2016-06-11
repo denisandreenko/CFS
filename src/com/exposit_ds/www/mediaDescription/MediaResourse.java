@@ -7,7 +7,7 @@ public class MediaResourse implements Serializable{
 
     private String name;
     private TypeMedia type;
-
+    private Boolean favorites = false;
 
     public MediaResourse(TypeMedia type, String name)
     {
@@ -29,5 +29,13 @@ public class MediaResourse implements Serializable{
 
     public void setType(TypeMedia type) {
         this.type = type;
+    }
+
+    public Boolean getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(Boolean favorites) {
+        this.favorites = favorites;
     }
 }

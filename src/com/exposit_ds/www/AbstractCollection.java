@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AbstractCollection<T extends MediaResourse> implements Serializable{
+public class AbstractCollection<T extends MediaResourse> implements Serializable, CollectionManager<T>{
 
     private List<T> listMedia = new ArrayList<>();
 
@@ -24,14 +24,36 @@ public class AbstractCollection<T extends MediaResourse> implements Serializable
     }
 
     public void show() {
-
         int i = 1;
-
         for (T media : listMedia) {
-
             System.out.print(i++ + ". ");
             System.out.println(media);
+        }
+    }
 
+    public void addFavorites(String name) {
+        for (T media : listMedia) {
+            if (media.getName().equals(name)) {
+                media.setFavorites(true);
+            }
+        }
+    }
+
+    public void showFavorites() {
+        int i = 1;
+        for (T media : listMedia) {
+            if (media.getFavorites() == true){
+                System.out.print(i++ + ". ");
+                System.out.println(media);
+            }
+        }
+    }
+
+    public void deleteFavorites(String name) {
+        for (T media : listMedia) {
+            if (media.getName().equals(name)) {
+                media.setFavorites(false);
+            }
         }
     }
 

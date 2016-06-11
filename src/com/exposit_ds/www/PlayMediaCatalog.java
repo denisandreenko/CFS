@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
-    public static AbstractCollection<MediaResourse> collection = new AbstractCollection<>();
+    public static CollectionManager<MediaResourse> collection = new AbstractCollection<>();
     private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
 
     public static void playMediaCatalog() throws FileNotFoundException{
@@ -176,6 +176,37 @@ public class PlayMediaCatalog {
 
                 collection.delete(name);
             }
+        });   //for favorites delete
+
+        mapCommands.put("add -f", new CommandManager() {
+            @Override
+            public void runCommand() {
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Enter name");
+                String name = input.nextLine();
+
+                collection.addFavorites(name);
+            }
+        });
+
+        mapCommands.put("show -f", new CommandManager() {
+            @Override
+            public void runCommand() {
+                collection.showFavorites();
+            }
+        });
+
+        mapCommands.put("delete -f", new CommandManager() {
+            @Override
+            public void runCommand() {
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Enter name");
+                String name = input.nextLine();
+
+                collection.deleteFavorites(name);
+            }
         });
 
         mapCommands.put("save", new CommandManager() {
@@ -219,12 +250,12 @@ public class PlayMediaCatalog {
                     log.log(Level.SEVERE, "Exception: ", ex);
                 }
             }
-        });   //mistake
+        });
 
         mapCommands.put("exit", new CommandManager() {
             @Override
             public void runCommand() {
-                return;
+                System.exit(0);
             }
         });
     }
@@ -234,8 +265,11 @@ public class PlayMediaCatalog {
         System.out.println("add - add a media resource");
         System.out.println("edit - edit a media resource");
         System.out.println("delete - delete a media resource");
+        System.out.println("add -f - add favorite ");
+        System.out.println("show -f - show favorites");
+        System.out.println("delete -f - delete favorite");
         System.out.println("save - save media catalog data");
         System.out.println("read - read media catalog data");
-        System.out.println("exit");
+        System.out.println("exit - exit application");
     }
 }
