@@ -25,12 +25,12 @@ public class AbstractCollection<T extends MediaResourse> implements Serializable
 
     public void show() {
 
-        int i = 0;
+        int i = 1;
 
-        for (T a : listMedia) {
+        for (T media : listMedia) {
 
-            System.out.println(i++ + " ");
-            System.out.println(a);
+            System.out.print(i++ + ". ");
+            System.out.println(media);
 
         }
     }
