@@ -1,6 +1,6 @@
 package com.exposit_ds.www.mediaDescription;
 
-public class Audio extends MediaResourse{
+public class Audio extends MediaResourse {
     private String nameSinger;
 
     public Audio(String name, String nameSinger){

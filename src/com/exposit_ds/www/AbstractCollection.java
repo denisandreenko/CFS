@@ -34,5 +34,14 @@ public class AbstractCollection<T extends MediaResourse> implements Serializable
 
         }
     }
+
+    public MediaResourse findForEdit(String name) {
+        for (T media : listMedia) {
+            if (media.getName().equals(name)) {
+                return media;
+            }
+        }
+        return null;
+    }
 }
 

@@ -22,7 +22,9 @@ public class PlayMediaCatalog {
 
             String key = input.nextLine();
 
-            if (mapCommands.containsKey(key)) mapCommands.get(key).runCommand();
+            if (mapCommands.containsKey(key)) {
+                mapCommands.get(key).runCommand();
+            }
 
         }
     }
@@ -64,20 +66,15 @@ public class PlayMediaCatalog {
                         int yearVideo = Integer.parseInt(input.nextLine());
 
                         collection.add(new Video(nameVideo, yearVideo));
-
-//                        MediaResourse mediaResourse = new Video(nameVideo, yearVideo);
-//                        Video video = (Video) mediaResourse;
                         break;
                     case "2":
                         System.out.println("Enter name");
                         String nameAudio = input.nextLine();
 
-                        System.out.println("Enter name singer");
+                        System.out.println("Enter singer");
                         String nameSinger = input.nextLine();
 
-                        MediaResourse audioResourse = new Audio(nameAudio, nameSinger);
-                        collection.add(audioResourse);
-                        Audio audio = (Audio) audioResourse;
+                        collection.add(new Audio(nameAudio, nameSinger));
                         break;
                     case "3":
                         System.out.println("Enter name");
@@ -86,19 +83,84 @@ public class PlayMediaCatalog {
                         System.out.println("Enter year");
                         int yearBook = Integer.parseInt(input.nextLine());
 
-                        System.out.println("Enter name author");
+                        System.out.println("Enter author");
                         String nameAuthor = input.nextLine();
 
-                        collection.add(new Books(nameBook, yearBook, nameAuthor));
+                        collection.add(new Book(nameBook, yearBook, nameAuthor));
                         break;
                     case "4":
                         System.out.println("Enter name");
                         String nameImage = input.nextLine();
 
-                        collection.add(new Images(nameImage));
+                        collection.add(new Image(nameImage));
                         break;
                     default:
                         System.out.println("Incorrect input, repeat attempt");
+                        break;
+                }
+            }
+        });
+
+        mapCommands.put("edit", new CommandManager() {
+            @Override
+            public void runCommand() {
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Enter name");
+                String name = input.nextLine();
+
+                MediaResourse media = collection.findForEdit(name);
+                switch (media.getType()) {
+                    case VIDEO:
+                        Video video = (Video) media;
+
+                        System.out.println("Enter new name");
+                        String nameVideo = input.nextLine();
+
+                        System.out.println("Enter year");
+                        int yearVideo = Integer.parseInt(input.nextLine());
+
+                        video.setName(nameVideo);
+                        video.setYear(yearVideo);
+                        break;
+                    case AUDIO:
+                        Audio audio = (Audio) media;
+
+                        System.out.println("Enter new name");
+                        String nameAudio = input.nextLine();
+
+                        System.out.println("Enter name singer");
+                        String nameSinger = input.nextLine();
+
+                        audio.setName(nameAudio);
+                        audio.setNameSinger(nameSinger);
+                        break;
+                    case BOOK:
+                        Book book = (Book) media;
+
+                        System.out.println("Enter new name");
+                        String nameBook = input.nextLine();
+
+                        System.out.println("Enter year");
+                        int yearBook = Integer.parseInt(input.nextLine());
+
+                        System.out.println("Enter name author");
+                        String nameAuthor = input.nextLine();
+
+                        book.setName(nameBook);
+                        book.setYear(yearBook);
+                        book.setNameAuthor(nameAuthor);
+                        break;
+                    case IMAGE:
+                        Image image = (Image) media;
+
+                        System.out.println("Enter new name");
+                        String nameImage = input.nextLine();
+
+                        image.setName(nameImage);
+                        break;
+                    default:
+                        System.out.println("Media don't find");
                         break;
                 }
             }
@@ -157,7 +219,7 @@ public class PlayMediaCatalog {
                     log.log(Level.SEVERE, "Exception: ", ex);
                 }
             }
-        });
+        });   //mistake
 
         mapCommands.put("exit", new CommandManager() {
             @Override
@@ -170,6 +232,7 @@ public class PlayMediaCatalog {
     public static void help() {
         System.out.println("show - display a list of media resources");
         System.out.println("add - add a media resource");
+        System.out.println("edit - edit a media resource");
         System.out.println("delete - delete a media resource");
         System.out.println("save - save media catalog data");
         System.out.println("read - read media catalog data");

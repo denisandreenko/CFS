@@ -1,10 +1,10 @@
 package com.exposit_ds.www.mediaDescription;
 
-public class Books extends MediaResourse{
+public class Book extends MediaResourse {
     private int year;
     private String nameAuthor;
 
-    public Books(String name, int year, String nameAuthor){
+    public Book(String name, int year, String nameAuthor){
         super(TypeMedia.BOOK, name);
         this.year = year;
         this.nameAuthor = nameAuthor;
