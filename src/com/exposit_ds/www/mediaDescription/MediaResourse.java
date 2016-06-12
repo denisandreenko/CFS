@@ -1,6 +1,8 @@
 package com.exposit_ds.www.mediaDescription;
 
 
+import com.exposit_ds.www.catalogDescription.Catalog;
+
 import java.io.Serializable;
 
 public class MediaResourse implements Serializable{
@@ -8,11 +10,13 @@ public class MediaResourse implements Serializable{
     private String name;
     private TypeMedia type;
     private Boolean favorites = false;
+    private Catalog externalCatalog;
 
-    public MediaResourse(TypeMedia type, String name)
+    public MediaResourse(TypeMedia type, String name, Catalog externalCatalog)
     {
         this.type = type;
         this.name = name;
+        this.externalCatalog = externalCatalog;
     }
 
     public String getName() {
@@ -37,5 +41,13 @@ public class MediaResourse implements Serializable{
 
     public void setFavorites(Boolean favorites) {
         this.favorites = favorites;
+    }
+
+    public Catalog getExternalCatalog() {
+        return externalCatalog;
+    }
+
+    public void setExternalCatalog(Catalog externalCatalog) {
+        this.externalCatalog = externalCatalog;
     }
 }

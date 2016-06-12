@@ -1,5 +1,6 @@
 package com.exposit_ds.www;
 
+import com.exposit_ds.www.catalogDescription.Catalog;
 import com.exposit_ds.www.mediaDescription.MediaResourse;
 
 
@@ -9,7 +10,7 @@ public interface CollectionManager<T> {
 
     void delete(String name);
 
-    void show();
+    void show(Catalog currentCatalog);
 
     void addFavorites(String name);
 

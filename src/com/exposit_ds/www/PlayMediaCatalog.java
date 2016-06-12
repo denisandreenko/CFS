@@ -1,5 +1,6 @@
 package com.exposit_ds.www;
 
+import com.exposit_ds.www.catalogDescription.CatalogCollection;
 import com.exposit_ds.www.mediaDescription.*;
 
 import java.io.*;
@@ -11,11 +12,15 @@ import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
-    public static CollectionManager<MediaResourse> collection = new AbstractCollection<>();
+    private static CollectionManager<MediaResourse> collection = new AbstractCollection<>();
     private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
+    private static CatalogCollection catalogCollection = new CatalogCollection();
 
     public static void playMediaCatalog() throws FileNotFoundException{
+
         System.out.println("Enter 'help' to see a list of commands");
+        catalogCollection.add("MediaCatalog", null);
+
         while (true){
             command();
             Scanner input = new Scanner(System.in);
@@ -41,7 +46,7 @@ public class PlayMediaCatalog {
         mapCommands.put("show", new CommandManager() {
             @Override
             public void runCommand() {
-                collection.show();
+                collection.show(catalogCollection.getCurrentCatalog());
             }
         });
 
@@ -65,7 +70,7 @@ public class PlayMediaCatalog {
                         System.out.println("Enter year");
                         int yearVideo = Integer.parseInt(input.nextLine());
 
-                        collection.add(new Video(nameVideo, yearVideo));
+                        collection.add(new Video(nameVideo, catalogCollection.getCurrentCatalog(), yearVideo));
                         break;
                     case "2":
                         System.out.println("Enter name");
@@ -74,7 +79,7 @@ public class PlayMediaCatalog {
                         System.out.println("Enter singer");
                         String nameSinger = input.nextLine();
 
-                        collection.add(new Audio(nameAudio, nameSinger));
+                        collection.add(new Audio(nameAudio, catalogCollection.getCurrentCatalog(), nameSinger));
                         break;
                     case "3":
                         System.out.println("Enter name");
@@ -86,13 +91,13 @@ public class PlayMediaCatalog {
                         System.out.println("Enter author");
                         String nameAuthor = input.nextLine();
 
-                        collection.add(new Book(nameBook, yearBook, nameAuthor));
+                        collection.add(new Book(nameBook, catalogCollection.getCurrentCatalog(), yearBook, nameAuthor));
                         break;
                     case "4":
                         System.out.println("Enter name");
                         String nameImage = input.nextLine();
 
-                        collection.add(new Image(nameImage));
+                        collection.add(new Image(nameImage, catalogCollection.getCurrentCatalog()));
                         break;
                     default:
                         System.out.println("Incorrect input, repeat attempt");
@@ -206,6 +211,26 @@ public class PlayMediaCatalog {
                 String name = input.nextLine();
 
                 collection.deleteFavorites(name);
+            }
+        });
+
+        mapCommands.put("add -c", new CommandManager() {
+            @Override
+            public void runCommand() {
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Enter name");
+                String name = input.nextLine();
+
+                catalogCollection.add(name, catalogCollection.getCurrentCatalog());
+            }
+        });
+
+        mapCommands.put("show -c", new CommandManager() {
+            @Override
+            public void runCommand() {
+                catalogCollection.show(catalogCollection.getCurrentCatalog());
+                collection.show(catalogCollection.getCurrentCatalog());
             }
         });
 

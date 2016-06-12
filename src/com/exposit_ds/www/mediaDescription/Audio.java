@@ -1,10 +1,12 @@
 package com.exposit_ds.www.mediaDescription;
 
+import com.exposit_ds.www.catalogDescription.Catalog;
+
 public class Audio extends MediaResourse {
     private String nameSinger;
 
-    public Audio(String name, String nameSinger){
-        super(TypeMedia.AUDIO, name);
+    public Audio(String name, Catalog catalog, String nameSinger){
+        super(TypeMedia.AUDIO, name, catalog);
         this.nameSinger = nameSinger;
     }
 

@@ -1,5 +1,6 @@
 package com.exposit_ds.www;
 
+import com.exposit_ds.www.catalogDescription.Catalog;
 import com.exposit_ds.www.mediaDescription.MediaResourse;
 
 import java.io.Serializable;
@@ -23,11 +24,11 @@ public class AbstractCollection<T extends MediaResourse> implements Serializable
         }
     }
 
-    public void show() {
-        int i = 1;
+    public void show(Catalog currentCatalog) {
         for (T media : listMedia) {
-            System.out.print(i++ + ". ");
-            System.out.println(media);
+            if (media.getExternalCatalog().equals(currentCatalog)) {
+                System.out.println(media);
+            }
         }
     }
 
