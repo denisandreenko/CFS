@@ -11,288 +11,250 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
+    
+    public static final String TEMP_OUT = "temp.out";
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
-    private static CollectionManager<MediaResourse> collection = new AbstractCollection<>();
+    private static MediaManager<MediaResource> collection = new MediaCollection<>();
     private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
     private static CatalogCollection catalogCollection = new CatalogCollection();
 
-    public static void playMediaCatalog() throws FileNotFoundException{
+    public static void playMediaCatalog() throws FileNotFoundException {
 
         System.out.println("Enter 'help' to see a list of commands");
         catalogCollection.add("MediaCatalog", null);
+        catalogCollection.setCurrentCatalog(catalogCollection.getListCatalog().get(0));
 
-        while (true){
+        Scanner input = new Scanner(System.in);
+        while (true) {
             command();
-            Scanner input = new Scanner(System.in);
-
             String key = input.nextLine();
-
             if (mapCommands.containsKey(key)) {
-                mapCommands.get(key).runCommand();
+                mapCommands.get(key).runCommand(input);
             }
-
         }
     }
 
-    public static void command() throws FileNotFoundException{
+    public static void command() throws FileNotFoundException {
 
-        mapCommands.put("help", new CommandManager() {
-            @Override
-            public void runCommand() {
-                help();
+        mapCommands.put("help", input -> help());
+
+        mapCommands.put("add -m", input -> {
+            System.out.println("select number, what you want to add:");
+            System.out.println("1.Video");
+            System.out.println("2.Audio");
+            System.out.println("3.Book");
+            System.out.println("4.Image");
+
+            String choose = input.nextLine();
+
+            switch (choose) {
+                case "1":
+                    addVideo(input);
+                    break;
+                case "2":
+                    addAudio(input);
+                    break;
+                case "3":
+                    addBook(input);
+                    break;
+                case "4":
+                    addImage(input);
+                    break;
+                default:
+                    System.out.println("incorrect input, repeat attempt");
+                    break;
             }
         });
 
-        mapCommands.put("show", new CommandManager() {
-            @Override
-            public void runCommand() {
-                collection.show(catalogCollection.getCurrentCatalog());
+        mapCommands.put("edit -m", input -> {
+            String name = getName(input);
+            MediaResource media = collection.findForEdit(name);
+            switch (media.getType()) {
+                case VIDEO:
+                    editVideo(input, (Video) media);
+                    break;
+                case AUDIO:
+                    editAudio(input, (Audio) media);
+                    break;
+                case BOOK:
+                    editBook(input, (Book) media);
+                    break;
+                case IMAGE:
+                    editImage(input, (Image) media);
+                    break;
+                default:
+                    System.out.println("media not found");
+                    break;
             }
         });
 
-        mapCommands.put("add", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
+        mapCommands.put("delete -m", input -> {
+            String name = getName(input);
+            collection.delete(name);
+        });
 
-                System.out.println("Select number, what you want to add:");
-                System.out.println("1.Video");
-                System.out.println("2.Audio");
-                System.out.println("3.Book");
-                System.out.println("4.Image");
-                String choose = input.nextLine();
+        mapCommands.put("add -f", input -> {
+            String name = getName(input);
+            collection.addFavorites(name);
+        });
 
-                switch (choose) {
-                    case "1":
-                        System.out.println("Enter name");
-                        String nameVideo = input.nextLine();
+        mapCommands.put("show -f", input -> collection.showFavorites());
 
-                        System.out.println("Enter year");
-                        int yearVideo = Integer.parseInt(input.nextLine());
+        mapCommands.put("delete -f", input -> {
+            String name = getName(input);
+            collection.deleteFavorites(name);
+        });
 
-                        collection.add(new Video(nameVideo, catalogCollection.getCurrentCatalog(), yearVideo));
-                        break;
-                    case "2":
-                        System.out.println("Enter name");
-                        String nameAudio = input.nextLine();
+        mapCommands.put("add -c", input -> {
+            String name = getName(input);
+            catalogCollection.add(name, catalogCollection.getCurrentCatalog());
+        });
 
-                        System.out.println("Enter singer");
-                        String nameSinger = input.nextLine();
+        mapCommands.put("edit -c", input -> {
+            String name = getName(input);
+            String newName = getNewName(input);
+            catalogCollection.edit(name, newName);
+        });
 
-                        collection.add(new Audio(nameAudio, catalogCollection.getCurrentCatalog(), nameSinger));
-                        break;
-                    case "3":
-                        System.out.println("Enter name");
-                        String nameBook = input.nextLine();
+        mapCommands.put("show", input -> {
+            catalogCollection.show(catalogCollection.getCurrentCatalog());
+            collection.show(catalogCollection.getCurrentCatalog());
+        });
 
-                        System.out.println("Enter year");
-                        int yearBook = Integer.parseInt(input.nextLine());
+        mapCommands.put("delete -c", input -> {
+            String name = getName(input);
+            catalogCollection.delete(name);
+        });
 
-                        System.out.println("Enter author");
-                        String nameAuthor = input.nextLine();
+        mapCommands.put("move", input -> {
+            String name = getName(input);
+            catalogCollection.move(name);
+        });
 
-                        collection.add(new Book(nameBook, catalogCollection.getCurrentCatalog(), yearBook, nameAuthor));
-                        break;
-                    case "4":
-                        System.out.println("Enter name");
-                        String nameImage = input.nextLine();
+        mapCommands.put("back", input -> catalogCollection.back());
 
-                        collection.add(new Image(nameImage, catalogCollection.getCurrentCatalog()));
-                        break;
-                    default:
-                        System.out.println("Incorrect input, repeat attempt");
-                        break;
+        mapCommands.put("save", input -> {
+            try {
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_OUT));
+                objectOutputStream.writeObject(collection);
+                objectOutputStream.close();
+            } catch (IOException ex) {
+                log.log(Level.SEVERE, "exception: ", ex);
+            }
+        });
+
+        mapCommands.put("read", input -> {
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader("temp.out"));
+                String a = bufferedReader.readLine();
+                if (a != null) {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("temp.out"));
+
+                    collection = (MediaCollection<MediaResource>) objectInputStream.readObject();
+
+                    objectInputStream.close();
+                } else {
+                    System.out.println("File is empty");
                 }
+                bufferedReader.close();
+            } catch (IOException | ClassNotFoundException ex) {
+                log.log(Level.SEVERE, "exception: ", ex);
             }
         });
 
-        mapCommands.put("edit", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
+        mapCommands.put("exit", input -> System.exit(0));
+    }
 
-                System.out.println("Enter name");
-                String name = input.nextLine();
+    private static String getName(Scanner input) {
+        System.out.println("enter name");
+        return input.nextLine();
+    }
 
-                MediaResourse media = collection.findForEdit(name);
-                switch (media.getType()) {
-                    case VIDEO:
-                        Video video = (Video) media;
+    private static void editImage(Scanner input, Image media) {
+        String nameImage = getNewName(input);
+        media.setName(nameImage);
+    }
 
-                        System.out.println("Enter new name");
-                        String nameVideo = input.nextLine();
+    private static void editBook(Scanner input, Book media) {
+        String nameBook = getNewName(input);
+        int yearBook = getYear(input);
+        String nameAuthor = getAuthor(input);
+        media.setName(nameBook);
+        media.setYear(yearBook);
+        media.setNameAuthor(nameAuthor);
+    }
 
-                        System.out.println("Enter year");
-                        int yearVideo = Integer.parseInt(input.nextLine());
+    private static String getNewName(Scanner input) {
+        System.out.println("enter new name");
+        return input.nextLine();
+    }
 
-                        video.setName(nameVideo);
-                        video.setYear(yearVideo);
-                        break;
-                    case AUDIO:
-                        Audio audio = (Audio) media;
+    private static void editAudio(Scanner input, Audio media) {
+        String nameAudio = getNewName(input);
+        String nameSinger = getSinger(input);
+        media.setName(nameAudio);
+        media.setNameSinger(nameSinger);
+    }
 
-                        System.out.println("Enter new name");
-                        String nameAudio = input.nextLine();
+    private static void editVideo(Scanner input, Video media) {
+        String nameVideo = getNewName(input);
+        int yearVideo = getYear(input);
+        media.setName(nameVideo);
+        media.setYear(yearVideo);
+    }
 
-                        System.out.println("Enter name singer");
-                        String nameSinger = input.nextLine();
+    private static int getYear(Scanner input) {
+        System.out.println("enter year");
+        return Integer.parseInt(input.nextLine());
+    }
 
-                        audio.setName(nameAudio);
-                        audio.setNameSinger(nameSinger);
-                        break;
-                    case BOOK:
-                        Book book = (Book) media;
+    private static String getAuthor(Scanner input) {
+        System.out.println("enter author");
+        return input.nextLine();
+    }
 
-                        System.out.println("Enter new name");
-                        String nameBook = input.nextLine();
+    private static String getSinger(Scanner input) {
+        System.out.println("enter singer");
+        return input.nextLine();
+    }
 
-                        System.out.println("Enter year");
-                        int yearBook = Integer.parseInt(input.nextLine());
+    private static void addAudio(Scanner input) {
+        String nameAudio = getName(input);
+        String nameSinger = getSinger(input);
+        collection.add(new Audio(nameAudio, catalogCollection.getCurrentCatalog(), nameSinger));
+    }
 
-                        System.out.println("Enter name author");
-                        String nameAuthor = input.nextLine();
+    private static void addVideo(Scanner input) {
+        String nameVideo = getName(input);
+        int yearVideo = getYear(input);
+        collection.add(new Video(nameVideo, catalogCollection.getCurrentCatalog(), yearVideo));
+    }
 
-                        book.setName(nameBook);
-                        book.setYear(yearBook);
-                        book.setNameAuthor(nameAuthor);
-                        break;
-                    case IMAGE:
-                        Image image = (Image) media;
+    private static void addBook(Scanner input) {
+        String nameBook = getName(input);
+        int yearBook = getYear(input);
+        String nameAuthor = getAuthor(input);
+        collection.add(new Book(nameBook, catalogCollection.getCurrentCatalog(), yearBook, nameAuthor));
+    }
 
-                        System.out.println("Enter new name");
-                        String nameImage = input.nextLine();
-
-                        image.setName(nameImage);
-                        break;
-                    default:
-                        System.out.println("Media don't find");
-                        break;
-                }
-            }
-        });
-
-        mapCommands.put("delete", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
-
-                System.out.println("Enter name");
-                String name = input.nextLine();
-
-                collection.delete(name);
-            }
-        });   //for favorites delete
-
-        mapCommands.put("add -f", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
-
-                System.out.println("Enter name");
-                String name = input.nextLine();
-
-                collection.addFavorites(name);
-            }
-        });
-
-        mapCommands.put("show -f", new CommandManager() {
-            @Override
-            public void runCommand() {
-                collection.showFavorites();
-            }
-        });
-
-        mapCommands.put("delete -f", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
-
-                System.out.println("Enter name");
-                String name = input.nextLine();
-
-                collection.deleteFavorites(name);
-            }
-        });
-
-        mapCommands.put("add -c", new CommandManager() {
-            @Override
-            public void runCommand() {
-                Scanner input = new Scanner(System.in);
-
-                System.out.println("Enter name");
-                String name = input.nextLine();
-
-                catalogCollection.add(name, catalogCollection.getCurrentCatalog());
-            }
-        });
-
-        mapCommands.put("show -c", new CommandManager() {
-            @Override
-            public void runCommand() {
-                catalogCollection.show(catalogCollection.getCurrentCatalog());
-                collection.show(catalogCollection.getCurrentCatalog());
-            }
-        });
-
-        mapCommands.put("save", new CommandManager() {
-            @Override
-            public void runCommand() {
-                try {
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("temp.out"));
-                    objectOutputStream.writeObject(collection);
-                    objectOutputStream.close();
-                }
-                catch (IOException ex)
-                {
-                    log.log(Level.SEVERE, "Exception: ", ex);
-                }
-            }
-        });
-
-        mapCommands.put("read", new CommandManager() {
-            @Override
-            public void runCommand() {
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader("temp.out"));
-                    String a = bufferedReader.readLine();
-                    if (a != null) {
-                        ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("temp.out"));
-
-                        collection = (AbstractCollection<MediaResourse>) objectInputStream.readObject();
-
-                        objectInputStream.close();
-                    } else {
-                        System.out.println("File is empty");
-                    }
-                    bufferedReader.close();
-                }
-                catch (IOException ex)
-                {
-                    log.log(Level.SEVERE, "Exception: ", ex);
-                }
-                catch (ClassNotFoundException ex)
-                {
-                    log.log(Level.SEVERE, "Exception: ", ex);
-                }
-            }
-        });
-
-        mapCommands.put("exit", new CommandManager() {
-            @Override
-            public void runCommand() {
-                System.exit(0);
-            }
-        });
+    private static void addImage(Scanner input) {
+        String nameImage = getName(input);
+        collection.add(new Image(nameImage, catalogCollection.getCurrentCatalog()));
     }
 
     public static void help() {
-        System.out.println("show - display a list of media resources");
-        System.out.println("add - add a media resource");
-        System.out.println("edit - edit a media resource");
-        System.out.println("delete - delete a media resource");
-        System.out.println("add -f - add favorite ");
-        System.out.println("show -f - show favorites");
-        System.out.println("delete -f - delete favorite");
+        System.out.println("add -m  - add a media resource");
+        System.out.println("edit -m  - edit a media resource");
+        System.out.println("delete -m  - delete a media resource");
+        System.out.println("add -f  - add a resource in \"favorite\"");
+        System.out.println("show -f  - show \"favorite\" ");
+        System.out.println("delete -f  - delete a resource from \"favorite\"");
+        System.out.println("add -c  - add a directory");
+        System.out.println("edit -c  - edit a directory");
+        System.out.println("delete -c  - delete a directory");
+        System.out.println("move - move to the directory");
+        System.out.println("back - back to the previous directory");
+        System.out.println("show  - show the resources of the current directory");
         System.out.println("save - save media catalog data");
         System.out.println("read - read media catalog data");
         System.out.println("exit - exit application");
