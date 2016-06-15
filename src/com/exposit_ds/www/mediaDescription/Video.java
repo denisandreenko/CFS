@@ -2,7 +2,10 @@ package com.exposit_ds.www.mediaDescription;
 
 import com.exposit_ds.www.catalogDescription.Catalog;
 
-public class Video extends MediaResourse {
+import java.io.Serializable;
+
+public class Video extends MediaResource implements Serializable {
+
     private int year;
 
     public Video(String name, Catalog catalog, int year) {

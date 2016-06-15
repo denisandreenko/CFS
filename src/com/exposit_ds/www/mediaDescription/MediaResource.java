@@ -5,14 +5,14 @@ import com.exposit_ds.www.catalogDescription.Catalog;
 
 import java.io.Serializable;
 
-public class MediaResourse implements Serializable{
+public class MediaResource implements Serializable {
 
     private String name;
     private TypeMedia type;
     private Boolean favorites = false;
     private Catalog externalCatalog;
 
-    public MediaResourse(TypeMedia type, String name, Catalog externalCatalog)
+    public MediaResource(TypeMedia type, String name, Catalog externalCatalog)
     {
         this.type = type;
         this.name = name;
@@ -31,10 +31,6 @@ public class MediaResourse implements Serializable{
         return type;
     }
 
-    public void setType(TypeMedia type) {
-        this.type = type;
-    }
-
     public Boolean getFavorites() {
         return favorites;
     }
@@ -45,9 +41,5 @@ public class MediaResourse implements Serializable{
 
     public Catalog getExternalCatalog() {
         return externalCatalog;
-    }
-
-    public void setExternalCatalog(Catalog externalCatalog) {
-        this.externalCatalog = externalCatalog;
     }
 }

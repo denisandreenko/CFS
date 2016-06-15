@@ -1,7 +1,8 @@
 package com.exposit_ds.www;
 
+import java.util.Scanner;
+
 public interface CommandManager {
 
-    public void runCommand();
-
+    void runCommand(Scanner input);
 }

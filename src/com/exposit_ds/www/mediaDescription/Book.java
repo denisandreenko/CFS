@@ -2,7 +2,10 @@ package com.exposit_ds.www.mediaDescription;
 
 import com.exposit_ds.www.catalogDescription.Catalog;
 
-public class Book extends MediaResourse {
+import java.io.Serializable;
+
+public class Book extends MediaResource implements Serializable {
+
     private int year;
     private String nameAuthor;
 

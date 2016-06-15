@@ -3,6 +3,7 @@ package com.exposit_ds.www.catalogDescription;
 import java.io.Serializable;
 
 public class Catalog implements Serializable {
+
     private String nameCatalog;
     private Catalog externalCatalog;
 
@@ -23,12 +24,8 @@ public class Catalog implements Serializable {
         return externalCatalog;
     }
 
-    public void setExternalCatalog(Catalog externalCatalog) {
-        this.externalCatalog = externalCatalog;
-    }
-
     @Override
     public String toString() {
-        return getNameCatalog();
+        return getNameCatalog() + " (catalog)";
     }
 }

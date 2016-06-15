@@ -1,16 +1,14 @@
-package com.exposit_ds.www;
+package com.exposit_ds.www.mediaDescription;
 
 import com.exposit_ds.www.catalogDescription.Catalog;
-import com.exposit_ds.www.mediaDescription.MediaResourse;
 
-
-public interface CollectionManager<T> {
+public interface MediaManager<T> {
 
     void add(T media);
 
     void delete(String name);
 
-    void show(Catalog currentCatalog);
+    void show(Catalog catalog);
 
     void addFavorites(String name);
 
@@ -18,6 +16,5 @@ public interface CollectionManager<T> {
 
     void deleteFavorites(String name);
 
-    MediaResourse findForEdit(String name);
-
+    MediaResource findForEdit(String name);
 }

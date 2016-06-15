@@ -2,7 +2,10 @@ package com.exposit_ds.www.mediaDescription;
 
 import com.exposit_ds.www.catalogDescription.Catalog;
 
-public class Audio extends MediaResourse {
+import java.io.Serializable;
+
+public class Audio extends MediaResource implements Serializable{
+
     private String nameSinger;
 
     public Audio(String name, Catalog catalog, String nameSinger){
