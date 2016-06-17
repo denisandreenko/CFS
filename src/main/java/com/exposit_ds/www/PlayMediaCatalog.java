@@ -11,7 +11,8 @@ import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
 
-    public static final String TEMP_OUT = "temp.out";
+    public static final String TEMP_OUT_MEDIA = "tempMedia.out";
+    public static final String TEMP_OUT_CATALOGS = "tempCatalogs.out";
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
     private static MediaManager<MediaResource> collection = new MediaCollection<>();
     private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
@@ -147,35 +148,53 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("save", input -> {
-            try {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("temp.out"));
-                objectOutputStream.writeObject(collection);
-                objectOutputStream.close();
-            } catch (IOException ex) {
-                log.log(Level.SEVERE, "exception: ", ex);
-            }
+            save(catalogCollection, TEMP_OUT_CATALOGS);
+            save(collection, TEMP_OUT_MEDIA);
         });
 
         mapCommands.put("read", input -> {
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader("temp.out"));
-                String a = bufferedReader.readLine();
-                if (a != null) {
-                    ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("temp.out"));
-
-                    collection = (MediaCollection<MediaResource>) objectInputStream.readObject();
-
-                    objectInputStream.close();
-                } else {
-                    System.out.println("File is empty");
-                }
-                bufferedReader.close();
-            } catch (IOException | ClassNotFoundException ex) {
-                log.log(Level.SEVERE, "exception: ", ex);
-            }
+            System.out.println(catalogCollection.getCurrentCatalog());
+            catalogCollection = (CatalogCollection) read(TEMP_OUT_CATALOGS);
+            collection = (MediaCollection<MediaResource>) read(TEMP_OUT_MEDIA);
         });
 
         mapCommands.put("exit", input -> System.exit(0));
+    }
+
+    public static void save(Object object, String fileName) {
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));
+            objectOutputStream.writeObject(object);
+            objectOutputStream.close();
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "exception: ", ex);
+        }
+    }
+
+//    <T> T doSomething(Class<T> cls) {
+//        Object o;
+//        // snip
+//        return cls.cast(o);
+//    }
+    public static Object read(String fileName) {
+        Object object = null;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+            String a = bufferedReader.readLine();
+            if (a != null) {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName));
+
+                object = objectInputStream.readObject();
+
+                objectInputStream.close();
+            } else {
+                System.out.println("File is empty");
+            }
+            bufferedReader.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            log.log(Level.SEVERE, "exception: ", ex);
+        }
+        return object;
     }
 
     public static List<Field> getInheritedPrivateFieldss(Class<?> type) {
