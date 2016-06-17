@@ -4,14 +4,13 @@ import com.exposit_ds.www.catalogDescription.CatalogCollection;
 import com.exposit_ds.www.mediaDescription.*;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
-    
+
     public static final String TEMP_OUT = "temp.out";
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
     private static MediaManager<MediaResource> collection = new MediaCollection<>();
@@ -39,14 +38,7 @@ public class PlayMediaCatalog {
         mapCommands.put("help", input -> help());
 
         mapCommands.put("add -m", input -> {
-            System.out.println("select number, what you want to add:");
-            System.out.println("1.Video");
-            System.out.println("2.Audio");
-            System.out.println("3.Book");
-            System.out.println("4.Image");
-
-            String choose = input.nextLine();
-
+            String choose = selectMedia(input);
             switch (choose) {
                 case "1":
                     addVideo(input);
@@ -133,9 +125,30 @@ public class PlayMediaCatalog {
 
         mapCommands.put("back", input -> catalogCollection.back());
 
+        mapCommands.put("search", input -> {
+            String choose = selectMedia(input);
+            switch (choose) {
+                case "1":
+                    searchMedia(input, TypeMedia.VIDEO);
+                    break;
+                case "2":
+                    searchMedia(input, TypeMedia.AUDIO);
+                    break;
+                case "3":
+                    searchMedia(input, TypeMedia.BOOK);
+                    break;
+                case "4":
+                    searchMedia(input, TypeMedia.IMAGE);
+                    break;
+                default:
+                    System.out.println("incorrect input, repeat attempt");
+                    break;
+            }
+        });
+
         mapCommands.put("save", input -> {
             try {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_OUT));
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("temp.out"));
                 objectOutputStream.writeObject(collection);
                 objectOutputStream.close();
             } catch (IOException ex) {
@@ -165,6 +178,68 @@ public class PlayMediaCatalog {
         mapCommands.put("exit", input -> System.exit(0));
     }
 
+    public static List<Field> getInheritedPrivateFieldss(Class<?> type) {
+        List<Field> result = new ArrayList<Field>();
+
+        Class<?> i = type;
+        while (i != null && i != Object.class) {
+            for (Field field : i.getDeclaredFields()) {
+                result.add(field);
+            }
+            i = i.getSuperclass();
+        }
+        return result;
+    }
+
+    private static void setObjectForSearch(Scanner input, MediaResource media) {
+        Class<? extends MediaResource> mediaClass = media.getClass();
+        List<Field> inheritedPrivateFieldss = getInheritedPrivateFieldss(mediaClass);
+        for (int i = inheritedPrivateFieldss.size()-1; i >= 0; i--) {
+            MediaInfo mediaInfo = inheritedPrivateFieldss.get(i).getAnnotation(MediaInfo.class);
+            if (mediaInfo == null) {
+                continue;
+            }
+            System.out.print(mediaInfo.name());
+            String nextLine = input.nextLine();
+            inheritedPrivateFieldss.get(i).setAccessible(true);
+            try {
+                inheritedPrivateFieldss.get(i).set(media, nextLine);
+            } catch (IllegalAccessException e) {
+                System.out.println("set error");
+            }
+        }
+    }
+
+    private static void searchMedia(Scanner input, TypeMedia typeMedia) {
+        if (typeMedia == TypeMedia.VIDEO) {
+            Video video = new Video();
+            setObjectForSearch(input, video);
+            collection.search(video, video.getType());
+        } else if (typeMedia == TypeMedia.AUDIO) {
+            Audio audio = new Audio();
+            setObjectForSearch(input, audio);
+            collection.search(audio, audio.getType());
+        } else if (typeMedia == TypeMedia.BOOK) {
+            Book book = new Book();
+            setObjectForSearch(input, book);
+            collection.search(book, book.getType());
+        } else if (typeMedia == TypeMedia.IMAGE) {
+            Image image = new Image();
+            setObjectForSearch(input, image);
+            collection.search(image, image.getType());
+        }
+    }
+
+    private static String selectMedia(Scanner input) {
+        System.out.println("select number:");
+        System.out.println("1.Video");
+        System.out.println("2.Audio");
+        System.out.println("3.Book");
+        System.out.println("4.Image");
+
+        return input.nextLine();
+    }
+
     private static String getName(Scanner input) {
         System.out.println("enter name");
         return input.nextLine();
@@ -177,7 +252,7 @@ public class PlayMediaCatalog {
 
     private static void editBook(Scanner input, Book media) {
         String nameBook = getNewName(input);
-        int yearBook = getYear(input);
+        String yearBook = getYear(input);
         String nameAuthor = getAuthor(input);
         media.setName(nameBook);
         media.setYear(yearBook);
@@ -198,14 +273,14 @@ public class PlayMediaCatalog {
 
     private static void editVideo(Scanner input, Video media) {
         String nameVideo = getNewName(input);
-        int yearVideo = getYear(input);
+        String yearVideo = getYear(input);
         media.setName(nameVideo);
         media.setYear(yearVideo);
     }
 
-    private static int getYear(Scanner input) {
+    private static String getYear(Scanner input) {
         System.out.println("enter year");
-        return Integer.parseInt(input.nextLine());
+        return input.nextLine();
     }
 
     private static String getAuthor(Scanner input) {
@@ -226,13 +301,13 @@ public class PlayMediaCatalog {
 
     private static void addVideo(Scanner input) {
         String nameVideo = getName(input);
-        int yearVideo = getYear(input);
+        String yearVideo = getYear(input);
         collection.add(new Video(nameVideo, catalogCollection.getCurrentCatalog(), yearVideo));
     }
 
     private static void addBook(Scanner input) {
         String nameBook = getName(input);
-        int yearBook = getYear(input);
+        String yearBook = getYear(input);
         String nameAuthor = getAuthor(input);
         collection.add(new Book(nameBook, catalogCollection.getCurrentCatalog(), yearBook, nameAuthor));
     }

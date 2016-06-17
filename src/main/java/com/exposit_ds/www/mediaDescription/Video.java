@@ -5,19 +5,23 @@ import com.exposit_ds.www.catalogDescription.Catalog;
 import java.io.Serializable;
 
 public class Video extends MediaResource implements Serializable {
+    @MediaInfo(name = "year: ")
+    private String year;
 
-    private int year;
-
-    public Video(String name, Catalog catalog, int year) {
+    public Video(String name, Catalog catalog, String year) {
         super(TypeMedia.VIDEO, name, catalog);
         this.year = year;
     }
 
-    public int getYear() {
+    public Video() {
+        super(TypeMedia.VIDEO);
+    }
+
+    public String getYear() {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(String year) {
         this.year = year;
     }
 

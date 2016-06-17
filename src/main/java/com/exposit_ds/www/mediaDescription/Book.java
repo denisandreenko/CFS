@@ -6,20 +6,27 @@ import java.io.Serializable;
 
 public class Book extends MediaResource implements Serializable {
 
-    private int year;
+    @MediaInfo(name = "year: ")
+    private String year;
+
+    @MediaInfo(name = "name author: ")
     private String nameAuthor;
 
-    public Book(String name, Catalog catalog, int year, String nameAuthor){
+    public Book(String name, Catalog catalog, String year, String nameAuthor){
         super(TypeMedia.BOOK, name, catalog);
         this.year = year;
         this.nameAuthor = nameAuthor;
     }
 
-    public int getYear() {
+    public Book() {
+        super(TypeMedia.BOOK);
+    }
+
+    public String getYear() {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(String year) {
         this.year = year;
     }
 

@@ -16,5 +16,7 @@ public interface MediaManager<T> {
 
     void deleteFavorites(String name);
 
+    void search(MediaResource media, TypeMedia typeMedia);
+
     MediaResource findForEdit(String name);
 }
