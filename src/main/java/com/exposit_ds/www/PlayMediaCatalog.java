@@ -85,7 +85,11 @@ public class PlayMediaCatalog {
 
         mapCommands.put("add -c", input -> {
             String name = getName(input);
-            catalogCollection.add(name, catalogCollection.getCurrentCatalog());
+            if (catalogCollection.add(name, catalogCollection.getCurrentCatalog())) {
+                System.out.println("done");
+            } else {
+                System.out.println("directory with the same name already exists");
+            }
         });
 
         mapCommands.put("edit -c", input -> {

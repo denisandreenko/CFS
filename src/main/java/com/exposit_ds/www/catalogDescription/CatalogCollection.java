@@ -10,21 +10,18 @@ public class CatalogCollection implements Serializable, CatalogManager {
     private List<Catalog> listCatalog = new ArrayList<>();
     private Catalog currentCatalog;
 
-    public void add(String name, Catalog externalCatalog) {
+    public boolean add(String name, Catalog currentCatalog) {
         if (listCatalog.isEmpty()) {
-            listCatalog.add(new Catalog(name, externalCatalog));
+            listCatalog.add(new Catalog(name, currentCatalog));
         } else {
-            int listSize = listCatalog.size();
-            for(int i = 0; i < listSize; i++) {
-                if (listCatalog.get(i).getNameCatalog().equals(name)
-                        && listCatalog.get(i).getExternalCatalog().equals(externalCatalog)) {
-                    System.out.println("directory with the same name already exists");
-                    break;
+            for (Catalog catalog : listCatalog) {
+                if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(currentCatalog)) {
+                    return false;
                 }
-                listCatalog.add(new Catalog(name, externalCatalog));
-                System.out.println("done");
             }
+            listCatalog.add(new Catalog(name, currentCatalog));
         }
+        return true;
     }
 
     public void delete(String name, Catalog currentCatalog) {

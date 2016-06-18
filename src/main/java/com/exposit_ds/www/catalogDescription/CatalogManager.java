@@ -2,7 +2,7 @@ package com.exposit_ds.www.catalogDescription;
 
 public interface CatalogManager {
 
-    void add(String name, Catalog currentCatalog);
+    boolean add(String name, Catalog currentCatalog);
 
     void delete(String name, Catalog currentCatalog);
 
