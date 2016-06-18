@@ -36,12 +36,14 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return false;
     }
 
-    public void edit(String name, String newName, Catalog currentCatalog) {
+    public boolean edit(String name, String newName, Catalog currentCatalog) {
         for (Catalog catalog : listCatalog) {
             if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(currentCatalog)) {
                 catalog.setNameCatalog(newName);
+                return true;
             }
         }
+        return false;
     }
 
     public boolean show(Catalog currentCatalog) {

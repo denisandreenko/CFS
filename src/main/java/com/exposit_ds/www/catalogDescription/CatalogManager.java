@@ -8,7 +8,7 @@ public interface CatalogManager {
 
     boolean show(Catalog catalog);
 
-    void edit(String name, String newName, Catalog currentCatalog);
+    boolean edit(String name, String newName, Catalog currentCatalog);
 
     void move(String name);
 

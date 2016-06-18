@@ -95,7 +95,11 @@ public class PlayMediaCatalog {
         mapCommands.put("edit -c", input -> {
             String name = getName(input);
             String newName = getNewName(input);
-            catalogCollection.edit(name, newName, catalogCollection.getCurrentCatalog());
+            if (catalogCollection.edit(name, newName, catalogCollection.getCurrentCatalog())) {
+                sayDone();
+            } else {
+                System.out.println("directory with that name is not found");
+            }
         });
 
         mapCommands.put("show", input -> {
@@ -143,8 +147,6 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("save", input -> {
-//            save(catalogCollection, TEMP_OUT_CATALOGS);
-//            save(collection, TEMP_OUT_MEDIA);
             if (save(catalogCollection, TEMP_OUT_CATALOGS) && save(collection, TEMP_OUT_MEDIA)) {
                 sayDone();
             }
