@@ -113,7 +113,6 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
                 return media;
             }
         }
-        System.out.println("resource is not found");
         return null;
     }
 

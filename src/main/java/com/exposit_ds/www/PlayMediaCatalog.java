@@ -63,7 +63,11 @@ public class PlayMediaCatalog {
         mapCommands.put("edit -m", input -> {
             String name = getName(input);
             MediaResource media = collection.findForEdit(name, catalogCollection.getCurrentCatalog());
-            setObject(input, media);
+            if (media != null) {
+                setObject(input, media);
+            } else {
+                mediaNotFound();
+            }
         });
 
         mapCommands.put("delete -m", input -> {
