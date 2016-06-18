@@ -10,7 +10,7 @@ public interface CatalogManager {
 
     boolean edit(String name, String newName, Catalog currentCatalog);
 
-    void move(String name);
+    boolean move(String name, Catalog currentCatalog);
 
-    void back();
+    boolean back();
 }

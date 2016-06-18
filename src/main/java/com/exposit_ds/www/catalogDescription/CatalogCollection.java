@@ -10,6 +10,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
     private List<Catalog> listCatalog = new ArrayList<>();
     private Catalog currentCatalog;
 
+    @Override
     public boolean add(String name, Catalog currentCatalog) {
         if (listCatalog.isEmpty()) {
             listCatalog.add(new Catalog(name, currentCatalog));
@@ -24,6 +25,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return true;
     }
 
+    @Override
     public boolean delete(String name, Catalog currentCatalog) {
         Iterator<Catalog> it = listCatalog.iterator();
         while (it.hasNext()) {
@@ -36,6 +38,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return false;
     }
 
+    @Override
     public boolean edit(String name, String newName, Catalog currentCatalog) {
         for (Catalog catalog : listCatalog) {
             if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(currentCatalog)) {
@@ -46,6 +49,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return false;
     }
 
+    @Override
     public boolean show(Catalog currentCatalog) {
         int count = 0;
         for (Catalog catalog : listCatalog) {
@@ -60,16 +64,25 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return count > 0;
     }
 
-    public void move(String name) {
+    @Override
+    public boolean move(String name, Catalog curCatalog) {
         for (Catalog catalog : listCatalog) {
-            if (catalog.getNameCatalog().equals(name)) {
+            if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(curCatalog)) {
                 currentCatalog = catalog;
+                return true;
             }
         }
+        return false;
     }
 
-    public void back() {
-        currentCatalog = currentCatalog.getExternalCatalog();
+    @Override
+    public boolean back() {
+        if (currentCatalog.getExternalCatalog() == null) {
+            return false;
+        } else {
+            currentCatalog = currentCatalog.getExternalCatalog();
+            return true;
+        }
     }
 
     public Catalog getCurrentCatalog() {

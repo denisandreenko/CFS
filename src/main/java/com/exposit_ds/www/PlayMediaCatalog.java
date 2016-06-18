@@ -98,7 +98,7 @@ public class PlayMediaCatalog {
             if (catalogCollection.edit(name, newName, catalogCollection.getCurrentCatalog())) {
                 sayDone();
             } else {
-                System.out.println("directory with that name is not found");
+                directoryNotFound();
             }
         });
 
@@ -114,16 +114,22 @@ public class PlayMediaCatalog {
             if (catalogCollection.delete(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
             } else {
-                System.out.println("directory with that name is not found");
+                directoryNotFound();
             }
         });
 
         mapCommands.put("move", input -> {
             String name = getName(input);
-            catalogCollection.move(name);
+            if (!catalogCollection.move(name, catalogCollection.getCurrentCatalog())) {
+                directoryNotFound();
+            }
         });
 
-        mapCommands.put("back", input -> catalogCollection.back());
+        mapCommands.put("back", input -> {
+            if (!catalogCollection.back()) {
+                System.out.println("you are in the root directory");
+            }
+        });
 
         mapCommands.put("search", input -> {
             String choose = selectMedia(input);
@@ -161,6 +167,10 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("exit", input -> System.exit(0));
+    }
+
+    private static void directoryNotFound() {
+        System.out.println("directory with that name is not found");
     }
 
     private static void sayDone() {
