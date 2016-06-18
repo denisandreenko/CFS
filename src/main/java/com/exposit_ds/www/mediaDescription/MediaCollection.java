@@ -27,8 +27,7 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     }
 
     @Override
-    public void delete(String name, Catalog currentCatalog) {
-        int count = 0;
+    public boolean delete(String name, Catalog currentCatalog) {
         Iterator<T> it = listMedia.iterator();
         while (it.hasNext()) {
             T item = it.next();
@@ -36,15 +35,11 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
                 it.remove();
                 if (item.getFavorites()) {
                     deleteFavorites(name, currentCatalog);
-                } else {
-                    System.out.println("done");
                 }
-                count++;
+                return true;
             }
         }
-        if (count == 0) {
-            System.out.println("resource is not found");
-        }
+        return false;
     }
 
     @Override
@@ -92,18 +87,14 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     }
 
     @Override
-    public void deleteFavorites(String name, Catalog currentCatalog) {
-        int count = 0;
+    public boolean deleteFavorites(String name, Catalog currentCatalog) {
         for (T media : listMedia) {
             if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
                 media.setFavorites(false);
-                count++;
-                System.out.println("done");
+                return true;
             }
         }
-        if (count == 0){
-            System.out.println("resource is not found");
-        }
+        return false;
     }
 
     @Override

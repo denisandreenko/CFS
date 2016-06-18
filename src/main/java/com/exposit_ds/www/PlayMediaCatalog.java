@@ -68,7 +68,11 @@ public class PlayMediaCatalog {
 
         mapCommands.put("delete -m", input -> {
             String name = getName(input);
-            collection.delete(name, catalogCollection.getCurrentCatalog());
+            if (collection.delete(name, catalogCollection.getCurrentCatalog())) {
+                sayDone();
+            } else {
+                mediaNotFound();
+            }
         });
 
         mapCommands.put("add -f", input -> {
@@ -80,7 +84,11 @@ public class PlayMediaCatalog {
 
         mapCommands.put("delete -f", input -> {
             String name = getName(input);
-            collection.deleteFavorites(name, catalogCollection.getCurrentCatalog());
+            if (collection.deleteFavorites(name, catalogCollection.getCurrentCatalog())) {
+                sayDone();
+            } else {
+                mediaNotFound();
+            }
         });
 
         mapCommands.put("add -c", input -> {
@@ -167,6 +175,10 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("exit", input -> System.exit(0));
+    }
+
+    private static void mediaNotFound() {
+        System.out.println("media with that name is not found");
     }
 
     private static void directoryNotFound() {

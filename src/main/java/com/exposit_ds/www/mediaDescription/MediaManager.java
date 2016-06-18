@@ -6,7 +6,7 @@ public interface MediaManager<T> {
 
     boolean add(T media);
 
-    void delete(String name, Catalog currentCatalog);
+    boolean delete(String name, Catalog currentCatalog);
 
     boolean show(Catalog catalog);
 
@@ -14,7 +14,7 @@ public interface MediaManager<T> {
 
     void showFavorites();
 
-    void deleteFavorites(String name, Catalog currentCatalog);
+    boolean deleteFavorites(String name, Catalog currentCatalog);
 
     void search(MediaResource media, TypeMedia typeMedia);
 
