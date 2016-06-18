@@ -266,22 +266,38 @@ public class PlayMediaCatalog {
             Video video = new Video();
             setObject(input, video);
             video.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            collection.add(video);
+            if (collection.add(video)) {
+                sayDone();
+            } else {
+                System.out.println("media resource with that name already exists");
+            }
         } else if (typeMedia == TypeMedia.AUDIO) {
             Audio audio = new Audio();
             setObject(input, audio);
             audio.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            collection.add(audio);
+            if (collection.add(audio)) {
+                sayDone();
+            } else {
+                System.out.println("media resource with that name already exists");
+            }
         } else if (typeMedia == TypeMedia.BOOK) {
             Book book = new Book();
             setObject(input, book);
             book.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            collection.add(book);
+            if (collection.add(book)) {
+                sayDone();
+            } else {
+                System.out.println("media resource with that name already exists");
+            }
         } else if (typeMedia == TypeMedia.IMAGE) {
             Image image = new Image();
             setObject(input, image);
             image.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            collection.add(image);
+            if (collection.add(image)) {
+                sayDone();
+            } else {
+                System.out.println("media resource with that name already exists");
+            }
         }
     }
 

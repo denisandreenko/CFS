@@ -16,9 +16,14 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     private List<T> listMedia = new ArrayList<>();
 
     @Override
-    public void add(T media) {
+    public boolean add(T media) {
+        for (T mediaSource : listMedia) {
+            if (mediaSource.getName().equals(media.getName()) && mediaSource.getExternalCatalog().equals(media.getExternalCatalog())) {
+                return false;
+            }
+        }
         listMedia.add(media);
-        System.out.println("done");
+        return true;
     }
 
     @Override

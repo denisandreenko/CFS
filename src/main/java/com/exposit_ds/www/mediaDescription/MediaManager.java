@@ -4,7 +4,7 @@ import com.exposit_ds.www.catalogDescription.Catalog;
 
 public interface MediaManager<T> {
 
-    void add(T media);
+    boolean add(T media);
 
     void delete(String name, Catalog currentCatalog);
 
