@@ -4,7 +4,7 @@ public interface CatalogManager {
 
     boolean add(String name, Catalog currentCatalog);
 
-    void delete(String name, Catalog currentCatalog);
+    boolean delete(String name, Catalog currentCatalog);
 
     boolean show(Catalog catalog);
 

@@ -86,9 +86,9 @@ public class PlayMediaCatalog {
         mapCommands.put("add -c", input -> {
             String name = getName(input);
             if (catalogCollection.add(name, catalogCollection.getCurrentCatalog())) {
-                System.out.println("done");
+                sayDone();
             } else {
-                System.out.println("directory with the same name already exists");
+                System.out.println("directory with that name already exists");
             }
         });
 
@@ -107,7 +107,11 @@ public class PlayMediaCatalog {
 
         mapCommands.put("delete -c", input -> {
             String name = getName(input);
-            catalogCollection.delete(name, catalogCollection.getCurrentCatalog());
+            if (catalogCollection.delete(name, catalogCollection.getCurrentCatalog())) {
+                sayDone();
+            } else {
+                System.out.println("directory with that name is not found");
+            }
         });
 
         mapCommands.put("move", input -> {
@@ -142,7 +146,7 @@ public class PlayMediaCatalog {
 //            save(catalogCollection, TEMP_OUT_CATALOGS);
 //            save(collection, TEMP_OUT_MEDIA);
             if (save(catalogCollection, TEMP_OUT_CATALOGS) && save(collection, TEMP_OUT_MEDIA)) {
-                System.out.println("done");
+                sayDone();
             }
         });
 
@@ -150,11 +154,15 @@ public class PlayMediaCatalog {
             catalogCollection = (CatalogCollection) read(TEMP_OUT_CATALOGS);
             collection = (MediaCollection<MediaResource>) read(TEMP_OUT_MEDIA);
             if (catalogCollection != null && collection != null) {
-                System.out.println("done");
+                sayDone();
             }
         });
 
         mapCommands.put("exit", input -> System.exit(0));
+    }
+
+    private static void sayDone() {
+        System.out.println("done");
     }
 
     public static boolean save(Object object, String fileName) {

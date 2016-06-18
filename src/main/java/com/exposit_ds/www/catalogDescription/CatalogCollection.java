@@ -24,14 +24,16 @@ public class CatalogCollection implements Serializable, CatalogManager {
         return true;
     }
 
-    public void delete(String name, Catalog currentCatalog) {
+    public boolean delete(String name, Catalog currentCatalog) {
         Iterator<Catalog> it = listCatalog.iterator();
         while (it.hasNext()) {
             Catalog item = it.next();
             if (item.getNameCatalog().equals(name) && item.getExternalCatalog().equals(currentCatalog)) {
                 it.remove();
+                return true;
             }
         }
+        return false;
     }
 
     public void edit(String name, String newName, Catalog currentCatalog) {
