@@ -77,10 +77,18 @@ public class PlayMediaCatalog {
 
         mapCommands.put("add -f", input -> {
             String name = getName(input);
-            collection.addFavorites(name, catalogCollection.getCurrentCatalog());
+            if (collection.addFavorites(name, catalogCollection.getCurrentCatalog())) {
+                sayDone();
+            } else {
+                mediaNotFound();
+            }
         });
 
-        mapCommands.put("show -f", input -> collection.showFavorites());
+        mapCommands.put("show -f", input -> {
+            if (!collection.showFavorites()) {
+                System.out.println("is empty");
+            }
+        });
 
         mapCommands.put("delete -f", input -> {
             String name = getName(input);

@@ -58,22 +58,18 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     }
 
     @Override
-    public void addFavorites(String name, Catalog currentCatalog) {
-        int count = 0;
+    public boolean addFavorites(String name, Catalog currentCatalog) {
         for (T media : listMedia) {
             if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
                 media.setFavorites(true);
-                count++;
-                System.out.println("done");
+                return true;
             }
         }
-        if (count == 0) {
-            System.out.println("resource is not found");
-        }
+        return false;
     }
 
     @Override
-    public void showFavorites() {
+    public boolean showFavorites() {
         int count = 0;
         for (T media : listMedia) {
             if (media.getFavorites()) {
@@ -81,9 +77,7 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
                 count++;
             }
         }
-        if (count == 0) {
-            System.out.println("is empty");
-        }
+        return count > 0;
     }
 
     @Override

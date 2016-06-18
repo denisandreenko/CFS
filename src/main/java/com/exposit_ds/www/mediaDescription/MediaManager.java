@@ -10,9 +10,9 @@ public interface MediaManager<T> {
 
     boolean show(Catalog catalog);
 
-    void addFavorites(String name, Catalog currentCatalog);
+    boolean addFavorites(String name, Catalog currentCatalog);
 
-    void showFavorites();
+    boolean showFavorites();
 
     boolean deleteFavorites(String name, Catalog currentCatalog);
 
