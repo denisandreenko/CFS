@@ -11,36 +11,52 @@ public class CatalogCollection implements Serializable, CatalogManager {
     private Catalog currentCatalog;
 
     public void add(String name, Catalog externalCatalog) {
-        listCatalog.add(new Catalog(name, externalCatalog));
+        if (listCatalog.isEmpty()) {
+            listCatalog.add(new Catalog(name, externalCatalog));
+        } else {
+            int listSize = listCatalog.size();
+            for(int i = 0; i < listSize; i++) {
+                if (listCatalog.get(i).getNameCatalog().equals(name)
+                        && listCatalog.get(i).getExternalCatalog().equals(externalCatalog)) {
+                    System.out.println("directory with the same name already exists");
+                    break;
+                }
+                listCatalog.add(new Catalog(name, externalCatalog));
+                System.out.println("done");
+            }
+        }
     }
 
-    public void delete(String name) {
+    public void delete(String name, Catalog currentCatalog) {
         Iterator<Catalog> it = listCatalog.iterator();
         while (it.hasNext()) {
             Catalog item = it.next();
-            if (item.getNameCatalog().equals(name)) {
+            if (item.getNameCatalog().equals(name) && item.getExternalCatalog().equals(currentCatalog)) {
                 it.remove();
             }
         }
     }
 
-    public void edit(String name, String newName) {
+    public void edit(String name, String newName, Catalog currentCatalog) {
         for (Catalog catalog : listCatalog) {
-            if (catalog.getNameCatalog().equals(name)) {
+            if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(currentCatalog)) {
                 catalog.setNameCatalog(newName);
             }
         }
     }
 
-    public void show(Catalog currentCatalog) {
+    public boolean show(Catalog currentCatalog) {
+        int count = 0;
         for (Catalog catalog : listCatalog) {
             if (catalog.getExternalCatalog() == null) {
                 continue;
             }
             else if (catalog.getExternalCatalog().equals(currentCatalog)) {
                 System.out.println(catalog);
+                count++;
             }
         }
+        return count > 0;
     }
 
     public void move(String name) {

@@ -13,7 +13,7 @@ public class Image extends MediaResource implements Serializable{
     public Image() {
         super(TypeMedia.IMAGE);
     }
-
+    
     @Override
     public String toString() {
         return getName() + " (image)";

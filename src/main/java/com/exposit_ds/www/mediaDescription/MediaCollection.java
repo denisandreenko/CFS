@@ -18,61 +18,91 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     @Override
     public void add(T media) {
         listMedia.add(media);
+        System.out.println("done");
     }
 
     @Override
-    public void delete(String name) {
+    public void delete(String name, Catalog currentCatalog) {
+        int count = 0;
         Iterator<T> it = listMedia.iterator();
         while (it.hasNext()) {
             T item = it.next();
-            if (item.getName().equals(name)) {
-                deleteFavorites(name);
+            if (item.getName().equals(name) && item.getExternalCatalog().equals(currentCatalog)) {
                 it.remove();
+                if (item.getFavorites()) {
+                    deleteFavorites(name, currentCatalog);
+                } else {
+                    System.out.println("done");
+                }
+                count++;
             }
+        }
+        if (count == 0) {
+            System.out.println("resource is not found");
         }
     }
 
     @Override
-    public void show(Catalog currentCatalog) {
+    public boolean show(Catalog currentCatalog) {
+        int count = 0;
         for (T media : listMedia) {
             if (media.getExternalCatalog() == null) {
                 continue;
             }
             if (media.getExternalCatalog().equals(currentCatalog)) {
                 System.out.println(media);
+                count++;
             }
         }
+        return count > 0;
     }
 
     @Override
-    public void addFavorites(String name) {
+    public void addFavorites(String name, Catalog currentCatalog) {
+        int count = 0;
         for (T media : listMedia) {
-            if (media.getName().equals(name)) {
+            if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
                 media.setFavorites(true);
+                count++;
+                System.out.println("done");
             }
+        }
+        if (count == 0) {
+            System.out.println("resource is not found");
         }
     }
 
     @Override
     public void showFavorites() {
+        int count = 0;
         for (T media : listMedia) {
             if (media.getFavorites()) {
                 System.out.println(media);
+                count++;
             }
+        }
+        if (count == 0) {
+            System.out.println("is empty");
         }
     }
 
     @Override
-    public void deleteFavorites(String name) {
+    public void deleteFavorites(String name, Catalog currentCatalog) {
+        int count = 0;
         for (T media : listMedia) {
-            if (media.getName().equals(name)) {
+            if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
                 media.setFavorites(false);
+                count++;
+                System.out.println("done");
             }
+        }
+        if (count == 0){
+            System.out.println("resource is not found");
         }
     }
 
     @Override
-    public void search(MediaResource comparableObject, TypeMedia typeMedia) {
+    public void search(MediaResource comparableObject, TypeMedia typeMedia) {   //make strict search
         for (MediaResource media : listMedia) {
             if (media.getType().equals(typeMedia)) {
                 try {
@@ -80,10 +110,21 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
                         System.out.println(media);
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    System.out.println("originate error");
                 }
             }
         }
+    }
+
+    @Override
+    public MediaResource findForEdit(String name, Catalog currentCatalog) {
+        for (T media : listMedia) {
+            if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
+                return media;
+            }
+        }
+        System.out.println("resource is not found");
+        return null;
     }
 
     public static boolean compare(MediaResource mediaResource, MediaResource comparableMediaResource, boolean isStrict) throws IllegalAccessException {
@@ -113,16 +154,6 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
             return true;
         }
         return false;
-    }
-
-    @Override
-    public MediaResource findForEdit(String name) {
-        for (T media : listMedia) {
-            if (media.getName().equals(name)) {
-                return media;
-            }
-        }
-        return null;
     }
 }
 

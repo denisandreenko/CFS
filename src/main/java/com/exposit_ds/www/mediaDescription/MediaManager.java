@@ -6,17 +6,17 @@ public interface MediaManager<T> {
 
     void add(T media);
 
-    void delete(String name);
+    void delete(String name, Catalog currentCatalog);
 
-    void show(Catalog catalog);
+    boolean show(Catalog catalog);
 
-    void addFavorites(String name);
+    void addFavorites(String name, Catalog currentCatalog);
 
     void showFavorites();
 
-    void deleteFavorites(String name);
+    void deleteFavorites(String name, Catalog currentCatalog);
 
     void search(MediaResource media, TypeMedia typeMedia);
 
-    MediaResource findForEdit(String name);
+    MediaResource findForEdit(String name, Catalog currentCatalog);
 }

@@ -51,6 +51,10 @@ public abstract class MediaResource implements Serializable {
         return externalCatalog;
     }
 
+    public void setExternalCatalog(Catalog externalCatalog) {
+        this.externalCatalog = externalCatalog;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

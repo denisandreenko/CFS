@@ -2,13 +2,13 @@ package com.exposit_ds.www.catalogDescription;
 
 public interface CatalogManager {
 
-    void add(String name, Catalog catalog);
+    void add(String name, Catalog currentCatalog);
 
-    void delete(String name);
+    void delete(String name, Catalog currentCatalog);
 
-    void show(Catalog catalog);
+    boolean show(Catalog catalog);
 
-    void edit(String name, String newName);
+    void edit(String name, String newName, Catalog currentCatalog);
 
     void move(String name);
 

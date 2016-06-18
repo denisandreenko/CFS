@@ -6,7 +6,6 @@ import com.exposit_ds.www.mediaDescription.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
@@ -30,6 +29,8 @@ public class PlayMediaCatalog {
             String key = input.nextLine();
             if (mapCommands.containsKey(key)) {
                 mapCommands.get(key).runCommand(input);
+            } else {
+                System.out.println("incorrect command");
             }
         }
     }
@@ -42,16 +43,16 @@ public class PlayMediaCatalog {
             String choose = selectMedia(input);
             switch (choose) {
                 case "1":
-                    addVideo(input);
+                    addMedia(input, TypeMedia.VIDEO);
                     break;
                 case "2":
-                    addAudio(input);
+                    addMedia(input, TypeMedia.AUDIO);
                     break;
                 case "3":
-                    addBook(input);
+                    addMedia(input, TypeMedia.BOOK);
                     break;
                 case "4":
-                    addImage(input);
+                    addMedia(input, TypeMedia.IMAGE);
                     break;
                 default:
                     System.out.println("incorrect input, repeat attempt");
@@ -61,41 +62,25 @@ public class PlayMediaCatalog {
 
         mapCommands.put("edit -m", input -> {
             String name = getName(input);
-            MediaResource media = collection.findForEdit(name);
-            switch (media.getType()) {
-                case VIDEO:
-                    editVideo(input, (Video) media);
-                    break;
-                case AUDIO:
-                    editAudio(input, (Audio) media);
-                    break;
-                case BOOK:
-                    editBook(input, (Book) media);
-                    break;
-                case IMAGE:
-                    editImage(input, (Image) media);
-                    break;
-                default:
-                    System.out.println("media not found");
-                    break;
-            }
+            MediaResource media = collection.findForEdit(name, catalogCollection.getCurrentCatalog());
+            setObject(input, media);
         });
 
         mapCommands.put("delete -m", input -> {
             String name = getName(input);
-            collection.delete(name);
+            collection.delete(name, catalogCollection.getCurrentCatalog());
         });
 
         mapCommands.put("add -f", input -> {
             String name = getName(input);
-            collection.addFavorites(name);
+            collection.addFavorites(name, catalogCollection.getCurrentCatalog());
         });
 
         mapCommands.put("show -f", input -> collection.showFavorites());
 
         mapCommands.put("delete -f", input -> {
             String name = getName(input);
-            collection.deleteFavorites(name);
+            collection.deleteFavorites(name, catalogCollection.getCurrentCatalog());
         });
 
         mapCommands.put("add -c", input -> {
@@ -106,17 +91,19 @@ public class PlayMediaCatalog {
         mapCommands.put("edit -c", input -> {
             String name = getName(input);
             String newName = getNewName(input);
-            catalogCollection.edit(name, newName);
+            catalogCollection.edit(name, newName, catalogCollection.getCurrentCatalog());
         });
 
         mapCommands.put("show", input -> {
-            catalogCollection.show(catalogCollection.getCurrentCatalog());
-            collection.show(catalogCollection.getCurrentCatalog());
+            if (!catalogCollection.show(catalogCollection.getCurrentCatalog())
+                    && !collection.show(catalogCollection.getCurrentCatalog())) {
+                System.out.println("is empty");
+            }
         });
 
         mapCommands.put("delete -c", input -> {
             String name = getName(input);
-            catalogCollection.delete(name);
+            catalogCollection.delete(name, catalogCollection.getCurrentCatalog());
         });
 
         mapCommands.put("move", input -> {
@@ -148,34 +135,36 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("save", input -> {
-            save(catalogCollection, TEMP_OUT_CATALOGS);
-            save(collection, TEMP_OUT_MEDIA);
+//            save(catalogCollection, TEMP_OUT_CATALOGS);
+//            save(collection, TEMP_OUT_MEDIA);
+            if (save(catalogCollection, TEMP_OUT_CATALOGS) && save(collection, TEMP_OUT_MEDIA)) {
+                System.out.println("done");
+            }
         });
 
         mapCommands.put("read", input -> {
-            System.out.println(catalogCollection.getCurrentCatalog());
             catalogCollection = (CatalogCollection) read(TEMP_OUT_CATALOGS);
             collection = (MediaCollection<MediaResource>) read(TEMP_OUT_MEDIA);
+            if (catalogCollection != null && collection != null) {
+                System.out.println("done");
+            }
         });
 
         mapCommands.put("exit", input -> System.exit(0));
     }
 
-    public static void save(Object object, String fileName) {
+    public static boolean save(Object object, String fileName) {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
         } catch (IOException ex) {
-            log.log(Level.SEVERE, "exception: ", ex);
+            System.out.println("when saving data error occurred");
+            return false;
         }
+        return true;
     }
 
-//    <T> T doSomething(Class<T> cls) {
-//        Object o;
-//        // snip
-//        return cls.cast(o);
-//    }
     public static Object read(String fileName) {
         Object object = null;
         try {
@@ -183,16 +172,14 @@ public class PlayMediaCatalog {
             String a = bufferedReader.readLine();
             if (a != null) {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName));
-
                 object = objectInputStream.readObject();
-
                 objectInputStream.close();
             } else {
-                System.out.println("File is empty");
+                System.out.println("file is empty");
             }
             bufferedReader.close();
         } catch (IOException | ClassNotFoundException ex) {
-            log.log(Level.SEVERE, "exception: ", ex);
+            System.out.println("an error occurred while reading file");
         }
         return object;
     }
@@ -210,7 +197,7 @@ public class PlayMediaCatalog {
         return result;
     }
 
-    private static void setObjectForSearch(Scanner input, MediaResource media) {
+    private static void setObject(Scanner input, MediaResource media) {
         Class<? extends MediaResource> mediaClass = media.getClass();
         List<Field> inheritedPrivateFieldss = getInheritedPrivateFieldss(mediaClass);
         for (int i = inheritedPrivateFieldss.size()-1; i >= 0; i--) {
@@ -232,20 +219,45 @@ public class PlayMediaCatalog {
     private static void searchMedia(Scanner input, TypeMedia typeMedia) {
         if (typeMedia == TypeMedia.VIDEO) {
             Video video = new Video();
-            setObjectForSearch(input, video);
+            setObject(input, video);
             collection.search(video, video.getType());
         } else if (typeMedia == TypeMedia.AUDIO) {
             Audio audio = new Audio();
-            setObjectForSearch(input, audio);
+            setObject(input, audio);
             collection.search(audio, audio.getType());
         } else if (typeMedia == TypeMedia.BOOK) {
             Book book = new Book();
-            setObjectForSearch(input, book);
+            setObject(input, book);
             collection.search(book, book.getType());
         } else if (typeMedia == TypeMedia.IMAGE) {
             Image image = new Image();
-            setObjectForSearch(input, image);
+            setObject(input, image);
             collection.search(image, image.getType());
+        }
+    }
+
+    //Need fix if int value
+    private static void addMedia(Scanner input, TypeMedia typeMedia) {
+        if (typeMedia == TypeMedia.VIDEO) {
+            Video video = new Video();
+            setObject(input, video);
+            video.setExternalCatalog(catalogCollection.getCurrentCatalog());
+            collection.add(video);
+        } else if (typeMedia == TypeMedia.AUDIO) {
+            Audio audio = new Audio();
+            setObject(input, audio);
+            audio.setExternalCatalog(catalogCollection.getCurrentCatalog());
+            collection.add(audio);
+        } else if (typeMedia == TypeMedia.BOOK) {
+            Book book = new Book();
+            setObject(input, book);
+            book.setExternalCatalog(catalogCollection.getCurrentCatalog());
+            collection.add(book);
+        } else if (typeMedia == TypeMedia.IMAGE) {
+            Image image = new Image();
+            setObject(input, image);
+            image.setExternalCatalog(catalogCollection.getCurrentCatalog());
+            collection.add(image);
         }
     }
 
@@ -260,80 +272,13 @@ public class PlayMediaCatalog {
     }
 
     private static String getName(Scanner input) {
-        System.out.println("enter name");
+        System.out.print("name: ");
         return input.nextLine();
-    }
-
-    private static void editImage(Scanner input, Image media) {
-        String nameImage = getNewName(input);
-        media.setName(nameImage);
-    }
-
-    private static void editBook(Scanner input, Book media) {
-        String nameBook = getNewName(input);
-        String yearBook = getYear(input);
-        String nameAuthor = getAuthor(input);
-        media.setName(nameBook);
-        media.setYear(yearBook);
-        media.setNameAuthor(nameAuthor);
     }
 
     private static String getNewName(Scanner input) {
-        System.out.println("enter new name");
+        System.out.print("new name: ");
         return input.nextLine();
-    }
-
-    private static void editAudio(Scanner input, Audio media) {
-        String nameAudio = getNewName(input);
-        String nameSinger = getSinger(input);
-        media.setName(nameAudio);
-        media.setNameSinger(nameSinger);
-    }
-
-    private static void editVideo(Scanner input, Video media) {
-        String nameVideo = getNewName(input);
-        String yearVideo = getYear(input);
-        media.setName(nameVideo);
-        media.setYear(yearVideo);
-    }
-
-    private static String getYear(Scanner input) {
-        System.out.println("enter year");
-        return input.nextLine();
-    }
-
-    private static String getAuthor(Scanner input) {
-        System.out.println("enter author");
-        return input.nextLine();
-    }
-
-    private static String getSinger(Scanner input) {
-        System.out.println("enter singer");
-        return input.nextLine();
-    }
-
-    private static void addAudio(Scanner input) {
-        String nameAudio = getName(input);
-        String nameSinger = getSinger(input);
-        collection.add(new Audio(nameAudio, catalogCollection.getCurrentCatalog(), nameSinger));
-    }
-
-    private static void addVideo(Scanner input) {
-        String nameVideo = getName(input);
-        String yearVideo = getYear(input);
-        collection.add(new Video(nameVideo, catalogCollection.getCurrentCatalog(), yearVideo));
-    }
-
-    private static void addBook(Scanner input) {
-        String nameBook = getName(input);
-        String yearBook = getYear(input);
-        String nameAuthor = getAuthor(input);
-        collection.add(new Book(nameBook, catalogCollection.getCurrentCatalog(), yearBook, nameAuthor));
-    }
-
-    private static void addImage(Scanner input) {
-        String nameImage = getName(input);
-        collection.add(new Image(nameImage, catalogCollection.getCurrentCatalog()));
     }
 
     public static void help() {
@@ -349,6 +294,7 @@ public class PlayMediaCatalog {
         System.out.println("move - move to the directory");
         System.out.println("back - back to the previous directory");
         System.out.println("show  - show the resources of the current directory");
+        System.out.println("search  - search a media resource");
         System.out.println("save - save media catalog data");
         System.out.println("read - read media catalog data");
         System.out.println("exit - exit application");
