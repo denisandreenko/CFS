@@ -20,8 +20,6 @@ public class PlayMediaCatalog {
     public static void playMediaCatalog() throws FileNotFoundException {
 
         System.out.println("Enter 'help' to see a list of commands");
-        catalogCollection.add("MediaCatalog", null);
-        catalogCollection.setCurrentCatalog(catalogCollection.getListCatalog().get(0));
 
         Scanner input = new Scanner(System.in);
         while (true) {
@@ -65,27 +63,27 @@ public class PlayMediaCatalog {
             MediaResource media = collection.findForEdit(name, catalogCollection.getCurrentCatalog());
             if (media != null) {
                 setObject(input, media);
-            } else {
-                mediaNotFound();
+                return;
             }
+            mediaNotFound();
         });
 
         mapCommands.put("delete -m", input -> {
             String name = getName(input);
             if (collection.delete(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                mediaNotFound();
+                return;
             }
+            mediaNotFound();
         });
 
         mapCommands.put("add -f", input -> {
             String name = getName(input);
             if (collection.addFavorites(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                mediaNotFound();
+                return;
             }
+            mediaNotFound();
         });
 
         mapCommands.put("show -f", input -> {
@@ -98,18 +96,18 @@ public class PlayMediaCatalog {
             String name = getName(input);
             if (collection.deleteFavorites(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                mediaNotFound();
+                return;
             }
+            mediaNotFound();
         });
 
         mapCommands.put("add -c", input -> {
             String name = getName(input);
             if (catalogCollection.add(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                System.out.println("directory with that name already exists");
+                return;
             }
+            System.out.println("directory with that name already exists");
         });
 
         mapCommands.put("edit -c", input -> {
@@ -117,9 +115,9 @@ public class PlayMediaCatalog {
             String newName = getNewName(input);
             if (catalogCollection.edit(name, newName, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                directoryNotFound();
+                return;
             }
+            directoryNotFound();
         });
 
         mapCommands.put("show", input -> {
@@ -134,9 +132,9 @@ public class PlayMediaCatalog {
             String name = getName(input);
             if (catalogCollection.delete(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
-            } else {
-                directoryNotFound();
+                return;
             }
+            directoryNotFound();
         });
 
         mapCommands.put("move", input -> {
@@ -178,7 +176,9 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("save", input -> {
-            if (save(catalogCollection, TEMP_OUT_CATALOGS) && save(collection, TEMP_OUT_MEDIA)) {
+            boolean a = save(catalogCollection, TEMP_OUT_CATALOGS);
+            boolean b = save(collection, TEMP_OUT_MEDIA);
+            if (a && b) {
                 sayDone();
             }
         });
@@ -275,16 +275,16 @@ public class PlayMediaCatalog {
             case "1":
                 if (collection.search(mediaResource, true)) {
                     sayDone();
-                } else {
-                    System.out.println("elements for this search are not found");
+                    return;
                 }
+                System.out.println("elements for this search are not found");
                 break;
             case "2":
                 if (collection.search(mediaResource, false)) {
                     sayDone();
-                } else {
-                    System.out.println("elements for this search are not found");
+                    return;
                 }
+                System.out.println("elements for this search are not found");
                 break;
             default:
                 System.out.println("incorrect input");
