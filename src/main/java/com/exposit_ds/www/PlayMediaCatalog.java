@@ -41,16 +41,20 @@ public class PlayMediaCatalog {
             String choose = selectMedia(input);
             switch (choose) {
                 case "1":
-                    addMedia(input, TypeMedia.VIDEO);
+                    Video video = new Video();
+                    addMedia(input, video);
                     break;
                 case "2":
-                    addMedia(input, TypeMedia.AUDIO);
+                    Audio audio = new Audio();
+                    addMedia(input, audio);
                     break;
                 case "3":
-                    addMedia(input, TypeMedia.BOOK);
+                    Book book = new Book();
+                    addMedia(input, book);
                     break;
                 case "4":
-                    addMedia(input, TypeMedia.IMAGE);
+                    Image image = new Image();
+                    addMedia(input, image);
                     break;
                 default:
                     System.out.println("incorrect input");
@@ -65,7 +69,7 @@ public class PlayMediaCatalog {
                 setObject(input, media);
                 return;
             }
-            mediaNotFound();
+            sayMediaNotFound();
         });
 
         mapCommands.put("delete -m", input -> {
@@ -74,7 +78,7 @@ public class PlayMediaCatalog {
                 sayDone();
                 return;
             }
-            mediaNotFound();
+            sayMediaNotFound();
         });
 
         mapCommands.put("add -f", input -> {
@@ -83,7 +87,7 @@ public class PlayMediaCatalog {
                 sayDone();
                 return;
             }
-            mediaNotFound();
+            sayMediaNotFound();
         });
 
         mapCommands.put("show -f", input -> {
@@ -98,7 +102,7 @@ public class PlayMediaCatalog {
                 sayDone();
                 return;
             }
-            mediaNotFound();
+            sayMediaNotFound();
         });
 
         mapCommands.put("add -c", input -> {
@@ -117,7 +121,7 @@ public class PlayMediaCatalog {
                 sayDone();
                 return;
             }
-            directoryNotFound();
+            sayDirectoryNotFound();
         });
 
         mapCommands.put("show", input -> {
@@ -134,13 +138,13 @@ public class PlayMediaCatalog {
                 sayDone();
                 return;
             }
-            directoryNotFound();
+            sayDirectoryNotFound();
         });
 
         mapCommands.put("move", input -> {
             String name = getName(input);
             if (!catalogCollection.move(name, catalogCollection.getCurrentCatalog())) {
-                directoryNotFound();
+                sayDirectoryNotFound();
             }
         });
 
@@ -192,18 +196,6 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("exit", input -> System.exit(0));
-    }
-
-    private static void mediaNotFound() {
-        System.out.println("media with that name is not found");
-    }
-
-    private static void directoryNotFound() {
-        System.out.println("directory with that name is not found");
-    }
-
-    private static void sayDone() {
-        System.out.println("done");
     }
 
     public static boolean save(Object object, String fileName) {
@@ -293,44 +285,14 @@ public class PlayMediaCatalog {
     }
 
     //Need fix if int value
-    private static void addMedia(Scanner input, TypeMedia typeMedia) {
-        if (typeMedia == TypeMedia.VIDEO) {
-            Video video = new Video();
-            setObject(input, video);
-            video.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            if (collection.add(video)) {
-                sayDone();
-            } else {
-                System.out.println("media resource with that name already exists");
-            }
-        } else if (typeMedia == TypeMedia.AUDIO) {
-            Audio audio = new Audio();
-            setObject(input, audio);
-            audio.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            if (collection.add(audio)) {
-                sayDone();
-            } else {
-                System.out.println("media resource with that name already exists");
-            }
-        } else if (typeMedia == TypeMedia.BOOK) {
-            Book book = new Book();
-            setObject(input, book);
-            book.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            if (collection.add(book)) {
-                sayDone();
-            } else {
-                System.out.println("media resource with that name already exists");
-            }
-        } else if (typeMedia == TypeMedia.IMAGE) {
-            Image image = new Image();
-            setObject(input, image);
-            image.setExternalCatalog(catalogCollection.getCurrentCatalog());
-            if (collection.add(image)) {
-                sayDone();
-            } else {
-                System.out.println("media resource with that name already exists");
-            }
+    private static void addMedia(Scanner input, MediaResource mediaResource) {
+        setObject(input, mediaResource);
+        mediaResource.setExternalCatalog(catalogCollection.getCurrentCatalog());
+        if (collection.add(mediaResource)) {
+            sayDone();
+            return;
         }
+        System.out.println("media resource with that name already exists");
     }
 
     private static String selectMedia(Scanner input) {
@@ -359,6 +321,18 @@ public class PlayMediaCatalog {
     private static String getNewName(Scanner input) {
         System.out.print("new name: ");
         return input.nextLine();
+    }
+
+    private static void sayMediaNotFound() {
+        System.out.println("media with that name is not found");
+    }
+
+    private static void sayDirectoryNotFound() {
+        System.out.println("directory with that name is not found");
+    }
+
+    private static void sayDone() {
+        System.out.println("done");
     }
 
     public static void help() {
