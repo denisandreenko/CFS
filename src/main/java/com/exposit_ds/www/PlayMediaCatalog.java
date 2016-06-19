@@ -12,7 +12,7 @@ public class PlayMediaCatalog {
     public static final String TEMP_OUT_MEDIA = "tempMedia.out";
     public static final String TEMP_OUT_CATALOGS = "tempCatalogs.out";
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
-    private static MediaManager<MediaResource> collection = new MediaCollection<>();
+    private static MediaManager<MediaResource> mediaCollection = new MediaCollection<>();
     private static CatalogCollection catalogCollection = new CatalogCollection();
 
     public static void playMediaCatalog() throws FileNotFoundException {
@@ -62,7 +62,7 @@ public class PlayMediaCatalog {
 
         mapCommands.put("edit -m", input -> {
             String name = getName(input);
-            MediaResource media = collection.findForEdit(name, catalogCollection.getCurrentCatalog());
+            MediaResource media = mediaCollection.findForEdit(name, catalogCollection.getCurrentCatalog());
             if (media != null) {
                 setObject(input, media);
                 return;
@@ -72,7 +72,7 @@ public class PlayMediaCatalog {
 
         mapCommands.put("delete -m", input -> {
             String name = getName(input);
-            if (collection.delete(name, catalogCollection.getCurrentCatalog())) {
+            if (mediaCollection.delete(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
                 return;
             }
@@ -81,7 +81,7 @@ public class PlayMediaCatalog {
 
         mapCommands.put("add -f", input -> {
             String name = getName(input);
-            if (collection.addFavorites(name, catalogCollection.getCurrentCatalog())) {
+            if (mediaCollection.addFavorites(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
                 return;
             }
@@ -89,14 +89,14 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("show -f", input -> {
-            if (!collection.showFavorites()) {
+            if (!mediaCollection.showFavorites()) {
                 System.out.println("is empty");
             }
         });
 
         mapCommands.put("delete -f", input -> {
             String name = getName(input);
-            if (collection.deleteFavorites(name, catalogCollection.getCurrentCatalog())) {
+            if (mediaCollection.deleteFavorites(name, catalogCollection.getCurrentCatalog())) {
                 sayDone();
                 return;
             }
@@ -124,7 +124,7 @@ public class PlayMediaCatalog {
 
         mapCommands.put("show", input -> {
             boolean a = catalogCollection.show(catalogCollection.getCurrentCatalog());
-            boolean b = collection.show(catalogCollection.getCurrentCatalog());
+            boolean b = mediaCollection.show(catalogCollection.getCurrentCatalog());
             if (!a & !b) {
                 System.out.println("is empty");
             }
@@ -179,7 +179,7 @@ public class PlayMediaCatalog {
 
         mapCommands.put("save", input -> {
             boolean a = save(catalogCollection, TEMP_OUT_CATALOGS);
-            boolean b = save(collection, TEMP_OUT_MEDIA);
+            boolean b = save(mediaCollection, TEMP_OUT_MEDIA);
             if (a && b) {
                 sayDone();
             }
@@ -187,8 +187,8 @@ public class PlayMediaCatalog {
 
         mapCommands.put("read", input -> {
             catalogCollection = (CatalogCollection) read(TEMP_OUT_CATALOGS);
-            collection = (MediaCollection<MediaResource>) read(TEMP_OUT_MEDIA);
-            if (catalogCollection != null && collection != null) {
+            mediaCollection = (MediaCollection<MediaResource>) read(TEMP_OUT_MEDIA);
+            if (catalogCollection != null && mediaCollection != null) {
                 sayDone();
             }
         });
@@ -274,14 +274,14 @@ public class PlayMediaCatalog {
         setObject(input, mediaResource);
         switch (answer) {
             case "1":
-                if (collection.search(mediaResource, true)) {
+                if (mediaCollection.search(mediaResource, true)) {
                     sayDone();
                     return;
                 }
                 System.out.println("elements for this search are not found");
                 break;
             case "2":
-                if (collection.search(mediaResource, false)) {
+                if (mediaCollection.search(mediaResource, false)) {
                     sayDone();
                     return;
                 }
@@ -296,7 +296,7 @@ public class PlayMediaCatalog {
     private static void addMedia(Scanner input, MediaResource mediaResource) {
         setObject(input, mediaResource);
         mediaResource.setExternalCatalog(catalogCollection.getCurrentCatalog());
-        if (collection.add(mediaResource)) {
+        if (mediaCollection.add(mediaResource)) {
             sayDone();
             return;
         }
