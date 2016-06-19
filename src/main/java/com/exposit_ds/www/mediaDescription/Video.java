@@ -6,9 +6,9 @@ import java.io.Serializable;
 
 public class Video extends MediaResource implements Serializable {
     @MediaInfo(name = "year: ")
-    private String year;
+    private Integer year;
 
-    public Video(String name, Catalog catalog, String year) {
+    public Video(String name, Catalog catalog, Integer year) {
         super(TypeMedia.VIDEO, name, catalog);
         this.year = year;
     }
@@ -17,11 +17,11 @@ public class Video extends MediaResource implements Serializable {
         super(TypeMedia.VIDEO);
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 

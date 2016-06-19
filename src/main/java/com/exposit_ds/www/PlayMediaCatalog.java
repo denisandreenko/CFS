@@ -57,7 +57,7 @@ public class PlayMediaCatalog {
                     addMedia(input, image);
                     break;
                 default:
-                    System.out.println("incorrect input");
+                    System.out.println("wrong input format (example: 1");
                     break;
             }
         });
@@ -174,7 +174,7 @@ public class PlayMediaCatalog {
                     searchMedia(input, image);
                     break;
                 default:
-                    System.out.println("incorrect input, repeat attempt");
+                    System.out.println("wrong input format (example: 1");
                     break;
             }
         });
@@ -229,7 +229,7 @@ public class PlayMediaCatalog {
         return object;
     }
 
-    public static List<Field> getInheritedPrivateFieldss(Class<?> type) {
+    public static List<Field> getInheritedPrivateFields(Class<?> type) {
         List<Field> result = new ArrayList<Field>();
 
         Class<?> i = type;
@@ -244,26 +244,37 @@ public class PlayMediaCatalog {
 
     private static void setObject(Scanner input, MediaResource media) {
         Class<? extends MediaResource> mediaClass = media.getClass();
-        List<Field> inheritedPrivateFieldss = getInheritedPrivateFieldss(mediaClass);
-        for (int i = inheritedPrivateFieldss.size()-1; i >= 0; i--) {
-            MediaInfo mediaInfo = inheritedPrivateFieldss.get(i).getAnnotation(MediaInfo.class);
+        List<Field> inheritedPrivateFields = getInheritedPrivateFields(mediaClass);
+        for (int i = inheritedPrivateFields.size()-1; i >= 0; i--) {
+            Class a = inheritedPrivateFields.get(i).getType();
+            MediaInfo mediaInfo = inheritedPrivateFields.get(i).getAnnotation(MediaInfo.class);
             if (mediaInfo == null) {
                 continue;
             }
             System.out.print(mediaInfo.name());
             String nextLine = input.nextLine();
-            inheritedPrivateFieldss.get(i).setAccessible(true);
+            inheritedPrivateFields.get(i).setAccessible(true);
             try {
-                inheritedPrivateFieldss.get(i).set(media, nextLine);
+                if (a == Integer.class) {
+                    Integer integer = new Integer(nextLine);
+                    inheritedPrivateFields.get(i).set(media, integer);
+                } else {
+                    inheritedPrivateFields.get(i).set(media, nextLine);
+                }
             } catch (IllegalAccessException e) {
-                System.out.println("set error");
+                System.out.println("error");
+            } catch (NumberFormatException e) {
+                System.out.println("wrong input format");
+                i++;
             }
         }
     }
 
     private static void searchMedia(Scanner input, MediaResource mediaResource) {
+        String answer = selectStrict(input);
+        System.out.println("if you do not want to search at the current attribute, press \"enter\"");
         setObject(input, mediaResource);
-        switch (selectStrict(input)) {
+        switch (answer) {
             case "1":
                 if (collection.search(mediaResource, true)) {
                     sayDone();
@@ -284,7 +295,6 @@ public class PlayMediaCatalog {
         }
     }
 
-    //Need fix if int value
     private static void addMedia(Scanner input, MediaResource mediaResource) {
         setObject(input, mediaResource);
         mediaResource.setExternalCatalog(catalogCollection.getCurrentCatalog());

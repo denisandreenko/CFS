@@ -7,12 +7,12 @@ import java.io.Serializable;
 public class Book extends MediaResource implements Serializable {
 
     @MediaInfo(name = "year: ")
-    private String year;
+    private Integer year;
 
     @MediaInfo(name = "name author: ")
     private String nameAuthor;
 
-    public Book(String name, Catalog catalog, String year, String nameAuthor){
+    public Book(String name, Catalog catalog, Integer year, String nameAuthor){
         super(TypeMedia.BOOK, name, catalog);
         this.year = year;
         this.nameAuthor = nameAuthor;
@@ -22,11 +22,11 @@ public class Book extends MediaResource implements Serializable {
         super(TypeMedia.BOOK);
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 

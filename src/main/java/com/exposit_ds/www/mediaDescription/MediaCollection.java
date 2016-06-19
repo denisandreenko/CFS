@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.exposit_ds.www.PlayMediaCatalog.getInheritedPrivateFieldss;
+import static com.exposit_ds.www.PlayMediaCatalog.getInheritedPrivateFields;
 
 
 public class MediaCollection<T extends MediaResource> implements Serializable, MediaManager<T> {
@@ -122,7 +122,7 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     public static boolean compare(MediaResource mediaResource, MediaResource comparableMediaResource, boolean isStrict) throws IllegalAccessException {
         int count = 0;
         Class<? extends MediaResource> mediaClass = mediaResource.getClass();
-        List<Field> inheritedPrivateFieldss = getInheritedPrivateFieldss(mediaClass);
+        List<Field> inheritedPrivateFieldss = getInheritedPrivateFields(mediaClass);
         for (int i = inheritedPrivateFieldss.size()-1; i >= 0; i--) {
             MediaInfo mediaInfo = inheritedPrivateFieldss.get(i).getAnnotation(MediaInfo.class);
             if (mediaInfo == null) {
