@@ -6,7 +6,6 @@ import com.exposit_ds.www.mediaDescription.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class PlayMediaCatalog {
 
@@ -14,16 +13,15 @@ public class PlayMediaCatalog {
     public static final String TEMP_OUT_CATALOGS = "tempCatalogs.out";
     private static Map<String, CommandManager> mapCommands = new HashMap<>();
     private static MediaManager<MediaResource> collection = new MediaCollection<>();
-    private static Logger log = Logger.getLogger(PlayMediaCatalog.class.getName());
     private static CatalogCollection catalogCollection = new CatalogCollection();
 
     public static void playMediaCatalog() throws FileNotFoundException {
 
         System.out.println("Enter 'help' to see a list of commands");
-
         Scanner input = new Scanner(System.in);
         while (true) {
             command();
+            catalogCollection.showLocate();
             String key = input.nextLine();
             if (mapCommands.containsKey(key)) {
                 mapCommands.get(key).runCommand(input);

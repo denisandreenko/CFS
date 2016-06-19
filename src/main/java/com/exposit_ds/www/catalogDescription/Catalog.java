@@ -1,12 +1,9 @@
 package com.exposit_ds.www.catalogDescription;
 
-import com.exposit_ds.www.mediaDescription.MediaInfo;
-
 import java.io.Serializable;
 
 public class Catalog implements Serializable {
 
-    @MediaInfo(name = "name: ")
     private String nameCatalog;
     private Catalog externalCatalog;
 

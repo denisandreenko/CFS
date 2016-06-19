@@ -8,11 +8,13 @@ import java.util.List;
 public class CatalogCollection implements Serializable, CatalogManager {
 
     private List<Catalog> listCatalog = new ArrayList<>();
+    private List<Catalog> locate = new ArrayList<>();
     private Catalog currentCatalog;
 
     public CatalogCollection() {
         listCatalog.add(new Catalog("root", null));
         currentCatalog = listCatalog.get(0);
+        locate.add(listCatalog.get(0));
     }
 
     @Override
@@ -74,6 +76,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
         for (Catalog catalog : listCatalog) {
             if (catalog.getNameCatalog().equals(name) && catalog.getExternalCatalog().equals(curCatalog)) {
                 currentCatalog = catalog;
+                locate.add(currentCatalog);
                 return true;
             }
         }
@@ -86,19 +89,22 @@ public class CatalogCollection implements Serializable, CatalogManager {
             return false;
         } else {
             currentCatalog = currentCatalog.getExternalCatalog();
+            locate.remove(locate.size()-1);
             return true;
         }
     }
 
+    public void showLocate() {
+        System.out.print(locate.get(0).getNameCatalog());
+        for (int i = 1; i < locate.size(); i++) {
+            System.out.print("\\"+locate.get(i).getNameCatalog());
+        }
+        System.out.print("> ");
+    }
+
+
+
     public Catalog getCurrentCatalog() {
         return currentCatalog;
-    }
-
-    public void setCurrentCatalog(Catalog currentCatalog) {
-        this.currentCatalog = currentCatalog;
-    }
-
-    public List<Catalog> getListCatalog() {
-        return listCatalog;
     }
 }
