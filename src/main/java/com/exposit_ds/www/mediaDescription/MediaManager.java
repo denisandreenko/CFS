@@ -16,7 +16,7 @@ public interface MediaManager<T> {
 
     boolean deleteFavorites(String name, Catalog currentCatalog);
 
-    void search(MediaResource media, TypeMedia typeMedia);
+    boolean search(MediaResource media, boolean isStrict);
 
     MediaResource findForEdit(String name, Catalog currentCatalog);
 }

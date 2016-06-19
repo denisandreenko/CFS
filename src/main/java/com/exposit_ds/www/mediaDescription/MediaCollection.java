@@ -92,21 +92,6 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
     }
 
     @Override
-    public void search(MediaResource comparableObject, TypeMedia typeMedia) {   //make strict search
-        for (MediaResource media : listMedia) {
-            if (media.getType().equals(typeMedia)) {
-                try {
-                    if ((compare(media, comparableObject, false))) {
-                        System.out.println(media);
-                    }
-                } catch (IllegalAccessException e) {
-                    System.out.println("originate error");
-                }
-            }
-        }
-    }
-
-    @Override
     public MediaResource findForEdit(String name, Catalog currentCatalog) {
         for (T media : listMedia) {
             if (media.getName().equals(name) && media.getExternalCatalog().equals(currentCatalog)) {
@@ -114,6 +99,24 @@ public class MediaCollection<T extends MediaResource> implements Serializable, M
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean search(MediaResource comparableObject, boolean isStrict) {
+        int count = 0;
+        for (MediaResource media : listMedia) {
+            if (media.getType().equals(comparableObject.getType())) {
+                try {
+                    if ((compare(media, comparableObject, isStrict))) {
+                        System.out.println(media);
+                        count++;
+                    }
+                } catch (IllegalAccessException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+        return count > 0;
     }
 
     public static boolean compare(MediaResource mediaResource, MediaResource comparableMediaResource, boolean isStrict) throws IllegalAccessException {

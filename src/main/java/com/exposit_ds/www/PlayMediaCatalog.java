@@ -55,7 +55,7 @@ public class PlayMediaCatalog {
                     addMedia(input, TypeMedia.IMAGE);
                     break;
                 default:
-                    System.out.println("incorrect input, repeat attempt");
+                    System.out.println("incorrect input");
                     break;
             }
         });
@@ -123,8 +123,9 @@ public class PlayMediaCatalog {
         });
 
         mapCommands.put("show", input -> {
-            if (!catalogCollection.show(catalogCollection.getCurrentCatalog())
-                    && !collection.show(catalogCollection.getCurrentCatalog())) {
+            boolean a = catalogCollection.show(catalogCollection.getCurrentCatalog());
+            boolean b = collection.show(catalogCollection.getCurrentCatalog());
+            if (!a & !b) {
                 System.out.println("is empty");
             }
         });
@@ -155,16 +156,20 @@ public class PlayMediaCatalog {
             String choose = selectMedia(input);
             switch (choose) {
                 case "1":
-                    searchMedia(input, TypeMedia.VIDEO);
+                    Video video = new Video();
+                    searchMedia(input, video);
                     break;
                 case "2":
-                    searchMedia(input, TypeMedia.AUDIO);
+                    Audio audio = new Audio();
+                    searchMedia(input, audio);
                     break;
                 case "3":
-                    searchMedia(input, TypeMedia.BOOK);
+                    Book book = new Book();
+                    searchMedia(input, book);
                     break;
                 case "4":
-                    searchMedia(input, TypeMedia.IMAGE);
+                    Image image = new Image();
+                    searchMedia(input, image);
                     break;
                 default:
                     System.out.println("incorrect input, repeat attempt");
@@ -264,23 +269,26 @@ public class PlayMediaCatalog {
         }
     }
 
-    private static void searchMedia(Scanner input, TypeMedia typeMedia) {
-        if (typeMedia == TypeMedia.VIDEO) {
-            Video video = new Video();
-            setObject(input, video);
-            collection.search(video, video.getType());
-        } else if (typeMedia == TypeMedia.AUDIO) {
-            Audio audio = new Audio();
-            setObject(input, audio);
-            collection.search(audio, audio.getType());
-        } else if (typeMedia == TypeMedia.BOOK) {
-            Book book = new Book();
-            setObject(input, book);
-            collection.search(book, book.getType());
-        } else if (typeMedia == TypeMedia.IMAGE) {
-            Image image = new Image();
-            setObject(input, image);
-            collection.search(image, image.getType());
+    private static void searchMedia(Scanner input, MediaResource mediaResource) {
+        setObject(input, mediaResource);
+        switch (selectStrict(input)) {
+            case "1":
+                if (collection.search(mediaResource, true)) {
+                    sayDone();
+                } else {
+                    System.out.println("elements for this search are not found");
+                }
+                break;
+            case "2":
+                if (collection.search(mediaResource, false)) {
+                    sayDone();
+                } else {
+                    System.out.println("elements for this search are not found");
+                }
+                break;
+            default:
+                System.out.println("incorrect input");
+                break;
         }
     }
 
@@ -333,6 +341,14 @@ public class PlayMediaCatalog {
         System.out.println("4.Image");
 
         return input.nextLine();
+    }
+
+    private static String selectStrict(Scanner input) {
+        System.out.println("you want to use strict search?");
+        System.out.println("1.Yes");
+        System.out.println("2.No");
+
+        return  input.nextLine();
     }
 
     private static String getName(Scanner input) {

@@ -10,6 +10,7 @@ public class CatalogCollection implements Serializable, CatalogManager {
     private List<Catalog> listCatalog = new ArrayList<>();
     private Catalog currentCatalog;
 
+    //public CatalogCollection()
     @Override
     public boolean add(String name, Catalog currentCatalog) {
         if (listCatalog.isEmpty()) {
