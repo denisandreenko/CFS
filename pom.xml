@@ -16,7 +16,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.exposit_ds.www.RunMedia</mainClass>
+                            <mainClass>com.exposit_ds.www.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
